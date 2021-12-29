@@ -19,11 +19,11 @@ import (
 // Route is the information for every URI.
 type Route struct {
 	// Name is the name of this Route.
-	Name        string
+	Name string
 	// Method is the string for the HTTP method. ex) GET, POST etc..
-	Method      string
+	Method string
 	// Pattern is the pattern of the URI.
-	Pattern     string
+	Pattern string
 	// HandlerFunc is the handler function of this route.
 	HandlerFunc gin.HandlerFunc
 }
@@ -54,7 +54,15 @@ func NewRouter() *gin.Engine {
 
 // Index is the index handler.
 func Index(c *gin.Context) {
-	c.String(http.StatusOK, "Hello World!")
+	myResponse := "Hello Gigs World!\n"
+	myResponse += "\nThis is the GigsAPI complying to the OpenAPI3.0 specification\n\n"
+	myResponse += "The endpoint for the JSON file is:\n"
+	myResponse += "/v2/openapi/json\n\n"
+	myResponse += "The endpoint for the Yaml file is:\n"
+	myResponse += "/v2/openapi/yaml\n"
+
+	c.String(http.StatusOK, myResponse)
+
 }
 
 var routes = Routes{
@@ -203,5 +211,19 @@ var routes = Routes{
 		http.MethodPut,
 		"/v2/user/:username",
 		UpdateUser,
+	},
+
+	{
+		"OpenAPIjson",
+		http.MethodGet,
+		"/v2/openapi/json",
+		OpenAPIjson,
+	},
+
+	{
+		"OpenAPIyaml",
+		http.MethodGet,
+		"/v2/openapi/yaml",
+		OpenAPIyaml,
 	},
 }
