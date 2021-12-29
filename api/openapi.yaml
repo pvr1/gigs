@@ -14,8 +14,8 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-- url: https://gigstore.swagger.io/v2
-- url: http://gigstore.swagger.io/v2
+#- url: https://127.0.0.1.nip.io:8080/v2
+- url: http://127.0.0.1.nip.io:8080/v2
 tags:
 - description: Everything about your future Gigs
   externalDocs:
