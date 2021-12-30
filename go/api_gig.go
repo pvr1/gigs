@@ -11,9 +11,7 @@
 package openapi
 
 import (
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
@@ -59,16 +57,9 @@ func DeleteGig(c *gin.Context) {
 
 // FindGigsByStatus - Finds Gigs by status
 func FindGigsByStatus(c *gin.Context) {
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.SetOutput(file)
-	log.Println(c.GetQuery("status"))
 	status, _ := c.GetQuery("status")
 	// Loop over the list of albums, looking for
 	// an album whose ID value matches the parameter.
-	log.Println(status)
 
 	tmp := []Gig{}
 
