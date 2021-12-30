@@ -23,7 +23,7 @@ func DeleteOrder(c *gin.Context) {
 
 // GetInventory - Returns gig inventories by status
 func GetInventory(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	c.IndentedJSON(http.StatusOK, gigs)
 }
 
 // GetOrderById - Find purchase order by ID

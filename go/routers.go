@@ -95,13 +95,6 @@ var routes = Routes{
 	},
 
 	{
-		"FindGigsByTags",
-		http.MethodGet,
-		"/v2/gig/findByTags",
-		FindGigsByTags,
-	},
-
-	{
 		"GetGigById",
 		http.MethodGet,
 		"/v2/gig/:gigId",

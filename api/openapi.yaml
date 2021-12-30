@@ -23,12 +23,12 @@ tags:
     url: http://swagger.io
   name: gigs
 - description: Access to Gigstore orders
-  name: gigs orders
+  name: gigsorders
 - description: Operations about user
   externalDocs:
     description: Find out more about our store
     url: http://swagger.io
-  name: gig worker
+  name: gigworker
 paths:
   /gigs:
     post:
@@ -132,7 +132,7 @@ paths:
   /gig/findByTags:
     get:
       deprecated: true
-      description: Muliple tags can be provided with comma separated strings. Use         tag1,
+      description: Muliple tags can be provided with comma separated strings. Use tag1,
         tag2, tag3 for testing.
       operationId: findGigsByTags
       parameters:
