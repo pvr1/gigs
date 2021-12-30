@@ -2,9 +2,9 @@ package openapi
 
 // ApiResponse - A generic API response
 type ApiResponse struct {
-	Code int32 `json:"code,omitempty"`
+	Code int32 `bson:"code,omitempty"`
 
-	Type string `json:"type,omitempty"`
+	Type string `bson:"type,omitempty"`
 
-	Message string `json:"message,omitempty"`
+	Message string `bson:"message,omitempty"`
 }

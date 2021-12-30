@@ -2,20 +2,20 @@ package openapi
 
 // User - A user struct used to store the user information
 type User struct {
-	Id int64 `json:"id,omitempty"`
+	Id int64 `bson:"id,omitempty"`
 
-	Username string `json:"username,omitempty"`
+	Username string `bson:"username,omitempty"`
 
-	FirstName string `json:"firstName,omitempty"`
+	FirstName string `bson:"firstName,omitempty"`
 
-	LastName string `json:"lastName,omitempty"`
+	LastName string `bson:"lastName,omitempty"`
 
-	Email string `json:"email,omitempty"`
+	Email string `bson:"email,omitempty"`
 
-	Password string `json:"password,omitempty"`
+	Password string `bson:"password,omitempty"`
 
-	Phone string `json:"phone,omitempty"`
+	Phone string `bson:"phone,omitempty"`
 
 	// User Status
-	UserStatus int32 `json:"userStatus,omitempty"`
+	UserStatus int32 `bson:"userStatus,omitempty"`
 }

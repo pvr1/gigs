@@ -2,8 +2,8 @@ package openapi
 
 // Tag - A tag struct used to meta tag the gigs
 type Tag struct {
-	Id   int64  `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	Id   int64  `bson:"id,omitempty"`
+	Name string `bson:"name,omitempty"`
 }
 
 // The possible values for the meta tag

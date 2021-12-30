@@ -6,16 +6,16 @@ import (
 
 // Order - A order struct
 type Order struct {
-	Id string `json:"id,omitempty"`
+	Id string `bson:"id,omitempty"`
 
-	GigId string `json:"gigId,omitempty"`
+	GigId string `bson:"gigId,omitempty"`
 
-	Price int32 `json:"price,omitempty"`
+	Price int32 `bson:"price,omitempty"`
 
-	ShipDate time.Time `json:"shipDate,omitempty"`
+	ShipDate time.Time `bson:"shipDate,omitempty"`
 
 	// Order Status
-	Status string `json:"status,omitempty"`
+	Status string `bson:"status,omitempty"`
 
-	Complete bool `json:"complete,omitempty"`
+	Complete bool `bson:"complete,omitempty"`
 }

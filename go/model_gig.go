@@ -2,20 +2,20 @@ package openapi
 
 // Gig - A gig struct
 type Gig struct {
-	Id string `json:"id,omitempty"`
+	Id string `bson:"id,omitempty"`
 
-	Category Category `json:"category,omitempty"`
+	Category Category `bson:"category,omitempty"`
 
-	Name string `json:"name"`
+	Name string `bson:"name"`
 
-	Description []string `json:"description"`
+	Description []string `bson:"description"`
 
-	Measurableoutcome []string `json:"measurableoutcome"`
+	Measurableoutcome []string `bson:"measurableoutcome"`
 
-	Tags []Tag `json:"tags,omitempty"`
+	Tags []Tag `bson:"tags,omitempty"`
 
 	// gig status in the store
-	Status string `json:"status,omitempty"`
+	Status string `bson:"status,omitempty"`
 }
 
 var gigs = []Gig{
