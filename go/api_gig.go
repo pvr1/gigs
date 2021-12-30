@@ -12,13 +12,13 @@ func AddGig(c *gin.Context) {
 	var mygig Gig
 
 	// Call BindJSON to bind the received JSON to
-	// newAlbum.
+	// newgig.
 	mygig.Id = uuid.NewV4().String()
 	if err := c.BindJSON(&mygig); err != nil {
 		return
 	}
 
-	// Add the new album to the slice.
+	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
 	c.IndentedJSON(http.StatusCreated, mygig)
 }
@@ -31,8 +31,8 @@ func RemoveIndex(s []Gig, index int) []Gig {
 // DeleteGig - Deletes a gig
 func DeleteGig(c *gin.Context) {
 	id := c.Param("gigId")
-	// Loop over the list of albums, looking for
-	// an album whose ID value matches the parameter.
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
 	for i, a := range gigs {
 		if a.Id == id {
 			gigs = RemoveIndex(gigs, i)
@@ -46,8 +46,8 @@ func DeleteGig(c *gin.Context) {
 // FindGigsByStatus - Finds Gigs by status
 func FindGigsByStatus(c *gin.Context) {
 	status, _ := c.GetQuery("status")
-	// Loop over the list of albums, looking for
-	// an album whose ID value matches the parameter.
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
 
 	tmp := []Gig{}
 
@@ -63,8 +63,8 @@ func FindGigsByStatus(c *gin.Context) {
 // GetGigById - Find gig by ID
 func GetGigById(c *gin.Context) {
 	id := c.Param("gigId")
-	// Loop over the list of albums, looking for
-	// an album whose ID value matches the parameter.
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
 
 	for _, a := range gigs {
 		if a.Id == id {
@@ -81,11 +81,11 @@ func UpdateGigWithForm(c *gin.Context) {
 	id := c.Param("gigId")
 
 	// Call BindJSON to bind the received JSON to
-	// newAlbum.
+	// newgig.
 	mygig.Id = uuid.NewV4().String()
 	if err := c.BindJSON(&mygig); err != nil {
-		// Loop over the list of albums, looking for
-		// an album whose ID value matches the parameter.
+		// Loop over the list of gigs, looking for
+		// an gig whose ID value matches the parameter.
 		for i, a := range gigs {
 			if a.Id == id {
 				gigs[i] = mygig

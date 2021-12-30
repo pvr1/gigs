@@ -1,28 +1,45 @@
 package openapi
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/twinj/uuid"
 )
+
+// DeepCopy deepcopies a to b using json marshaling
+func DeepCopy(a, b interface{}) {
+	byt, _ := json.Marshal(a)
+	json.Unmarshal(byt, b)
+}
 
 // UpdateGig - Update an existing gig
 func UpdateGig(c *gin.Context) {
-	var mygig Gig
-	id := c.Param("gigId")
+	/*
+		// If the file doesn't exist, create it or append to the file
+		file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	// Call BindJSON to bind the received JSON to
-	// newAlbum.
-	mygig.Id = uuid.NewV4().String()
-	if err := c.BindJSON(&mygig); err != nil {
-		// Loop over the list of albums, looking for
-		// an album whose ID value matches the parameter.
-		for i, a := range gigs {
-			if a.Id == id {
-				gigs[i] = mygig
-				c.IndentedJSON(http.StatusOK, a)
-			}
+		log.SetOutput(file)
+	*/
+	bodyjson, err := c.GetRawData()
+	var body Gig
+	json.Unmarshal(bodyjson, &body)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
+	for i, a := range gigs {
+		if a.Id == body.Id {
+			// Update the gig
+			DeepCopy(body, &gigs[i])
+			c.IndentedJSON(http.StatusOK, body)
+			return
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
