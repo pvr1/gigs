@@ -15,4 +15,4 @@ ENV GIN_MODE=release
 COPY ./api/openapi.yaml ./api/openapi.yaml
 COPY --from=build /go/src/gigs .
 EXPOSE 8080/tcp
-ENTRYPOINT ["./openapi"]
+ENTRYPOINT ["./gigs"]
