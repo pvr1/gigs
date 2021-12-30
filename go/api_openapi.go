@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//TODO: Add openapi.json
-
 // OpenAPIjson - Get OpenAPI 3.0 JSON
 func OpenAPIjson(c *gin.Context) {
 	file, err := os.Open("./api/openapi.json")
