@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	github.com/gin-gonic/gin v1.7.7
-	github.com/jinzhu/copier v0.3.4
 	github.com/twinj/uuid v1.0.0
 )
 
