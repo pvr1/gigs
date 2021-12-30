@@ -625,20 +625,20 @@ components:
   schemas:
     Order:
       example:
-        quantity: 1
-        id: 0
-        gigId: 6
+        price: 1
+        id: uuid
+        gigId: uuid
         shipDate: 2000-01-23T04:56:07.000+00:00
         complete: false
         status: placed
       properties:
         id:
-          format: int64
-          type: integer
+          format: string
+          type: string
         gigId:
-          format: int64
-          type: integer
-        quantity:
+          format: string
+          type: string
+        price:
           format: int32
           type: integer
         shipDate:
@@ -725,7 +725,7 @@ components:
         description:
         - description
         - description
-        id: 0
+        id: uuid
         category:
           name: name
           id: 6
@@ -737,8 +737,8 @@ components:
         status: available
       properties:
         id:
-          format: int64
-          type: integer
+          format: string
+          type: string
         category:
           $ref: '#/components/schemas/Category'
         name:
