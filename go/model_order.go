@@ -6,11 +6,11 @@ import (
 
 // Order - A order struct
 type Order struct {
-	Id int64 `json:"id,omitempty"`
+	Id string `json:"id,omitempty"`
 
-	GigId int64 `json:"gigId,omitempty"`
+	GigId string `json:"gigId,omitempty"`
 
-	Quantity int32 `json:"quantity,omitempty"`
+	Price int32 `json:"price,omitempty"`
 
 	ShipDate time.Time `json:"shipDate,omitempty"`
 
