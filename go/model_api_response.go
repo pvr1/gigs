@@ -11,7 +11,6 @@
 package openapi
 
 type ApiResponse struct {
-
 	Code int32 `json:"code,omitempty"`
 
 	Type string `json:"type,omitempty"`
