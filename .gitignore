@@ -1,4 +1,6 @@
 gigs
 logs.txt
 .github/
+.openapi-generator/
+.vscode/
 .openapi-generator-ignore
