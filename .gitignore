@@ -1,2 +1,4 @@
 gigs
 logs.txt
+.github/
+.openapi-generator-ignore
