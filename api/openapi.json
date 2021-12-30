@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "contact": {
-      "email": "per.von.rosen@gmail.com"
+      "email": "a.a@a.com"
     },
     "description": "This is the Gigs workforce api. Use to search for workforce or search for a gig",
     "license": {
