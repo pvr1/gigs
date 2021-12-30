@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
@@ -43,7 +42,7 @@ func DeleteGig(c *gin.Context) {
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
 // FindGigsByStatus - Finds Gigs by status
@@ -74,19 +73,21 @@ func GetGigById(c *gin.Context) {
 			c.IndentedJSON(http.StatusOK, a)
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 
 }
 
 // UpdateGigWithForm - Updates a gig in the store with form data
 func UpdateGigWithForm(c *gin.Context) {
 	// If the file doesn't exist, create it or append to the file
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
+	/*
+		file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	log.SetOutput(file)
+		log.SetOutput(file)
+	*/
 	log.Println("UpdateGigWithForm")
 	id := c.Param("gigId")
 	log.Println("id: ", id)
@@ -114,7 +115,7 @@ func UpdateGigWithForm(c *gin.Context) {
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
 // UploadFile - uploads an image

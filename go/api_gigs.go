@@ -42,5 +42,5 @@ func UpdateGig(c *gin.Context) {
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
