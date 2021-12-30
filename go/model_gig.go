@@ -1,5 +1,6 @@
 package openapi
 
+// Gig - A gig struct
 type Gig struct {
 	Id string `json:"id,omitempty"`
 

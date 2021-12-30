@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Order - A order struct
 type Order struct {
 	Id int64 `json:"id,omitempty"`
 

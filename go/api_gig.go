@@ -25,7 +25,7 @@ func AddGig(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, mygig)
 }
 
-//Helper function to remove a gig from the slice
+// RemoveIndex - Helper function to remove a gig from the slice
 func RemoveIndex(s []Gig, index int) []Gig {
 	return append(s[:index], s[index+1:]...)
 }

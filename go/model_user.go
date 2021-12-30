@@ -1,5 +1,6 @@
 package openapi
 
+// User - A user struct used to store the user information
 type User struct {
 	Id int64 `json:"id,omitempty"`
 
