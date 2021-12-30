@@ -34,9 +34,24 @@ func AddGig(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, mygig)
 }
 
+//Helper function to remove a gig from the slice
+func RemoveIndex(s []Gig, index int) []Gig {
+	return append(s[:index], s[index+1:]...)
+}
+
 // DeleteGig - Deletes a gig
 func DeleteGig(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	id, _ := strconv.ParseInt(c.Param("gigId"), 10, 0)
+	// Loop over the list of albums, looking for
+	// an album whose ID value matches the parameter.
+	for i, a := range gigs {
+		if a.Id == id {
+			gigs = RemoveIndex(gigs, i)
+			c.IndentedJSON(http.StatusOK, a)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
 }
 
 // FindGigsByStatus - Finds Gigs by status
@@ -74,7 +89,7 @@ func GetGigById(c *gin.Context) {
 			c.IndentedJSON(http.StatusOK, a)
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "gig not found"})
 
 }
 
