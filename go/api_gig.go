@@ -16,7 +16,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"github.com/twinj/uuid"
+	//"github.com/google/uuid"
 )
 
 // AddGig - Add a new gig to the store
@@ -25,7 +26,8 @@ func AddGig(c *gin.Context) {
 
 	// Call BindJSON to bind the received JSON to
 	// newAlbum.
-	mygig.Id = uuid.New().String()
+	//mygig.Id = uuid.New().String()
+	mygig.Id = uuid.NewV4().String()
 	if err := c.BindJSON(&mygig); err != nil {
 		return
 	}
@@ -42,7 +44,6 @@ func RemoveIndex(s []Gig, index int) []Gig {
 
 // DeleteGig - Deletes a gig
 func DeleteGig(c *gin.Context) {
-	//id, _ := strconv.ParseInt(c.Param("gigId"), 10, 0)
 	id := c.Param("gigId")
 	// Loop over the list of albums, looking for
 	// an album whose ID value matches the parameter.
@@ -82,7 +83,6 @@ func FindGigsByStatus(c *gin.Context) {
 
 // GetGigById - Find gig by ID
 func GetGigById(c *gin.Context) {
-	//id, _ := strconv.ParseInt(c.Param("gigId"), 10, 0)
 	id := c.Param("gigId")
 	// Loop over the list of albums, looking for
 	// an album whose ID value matches the parameter.
