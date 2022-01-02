@@ -682,8 +682,8 @@ components:
         username: username
       properties:
         id:
-          format: int64
-          type: integer
+          format: uuid
+          type: string
         username:
           type: string
         firstName:
@@ -709,8 +709,8 @@ components:
         id: 1
       properties:
         id:
-          format: int64
-          type: integer
+          format: uuid
+          type: string
         name:
           type: string
       type: object
@@ -728,7 +728,7 @@ components:
         id: uuid
         category:
           name: name
-          id: 6
+          id: "6"
         tags:
         - name: name
           id: 1
@@ -737,7 +737,7 @@ components:
         status: available
       properties:
         id:
-          format: string
+          format: uuid
           type: string
         category:
           $ref: '#/components/schemas/Category'

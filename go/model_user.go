@@ -18,4 +18,7 @@ type User struct {
 
 	// User Status
 	UserStatus int32 `bson:"userStatus,omitempty"`
+
+	// User Role - e.g. gigworker, employer etc
+	Role []Role `bson:"role,omitempty"`
 }
