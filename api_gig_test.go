@@ -95,5 +95,5 @@ func TestUpdategig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "{\"Id\": \"1\",\"Category\": {\"Id\": 0,\"Name\": \"\"},\"Name\": \"Prutt\",\"Description\": [\"descr\"],\"Measurableoutcome\": [\"hahaha\"],\"Tags\": null,\"Status\": \"available\"}", a)
+	assert.Equal(t, "{\n    \"Id\": \"1\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Prutt\",\n    \"Description\": [\n        \"descr\"\n    ],\n    \"Measurableoutcome\": [\n        \"hahaha\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}", a)
 }
