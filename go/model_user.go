@@ -2,7 +2,7 @@ package openapi
 
 // User - A user struct used to store the user information
 type User struct {
-	Id int64 `bson:"id,omitempty"`
+	Id string `bson:"id,omitempty"`
 
 	Username string `bson:"username,omitempty"`
 
@@ -21,4 +21,17 @@ type User struct {
 
 	// User Role - e.g. gigworker, employer etc
 	Role []Role `bson:"role,omitempty"`
+}
+
+var users = []User{
+	{
+		FirstName:  "firstName",
+		LastName:   "lastName",
+		Password:   "password",
+		UserStatus: 6,
+		Phone:      "888-888-8888",
+		Id:         "0",
+		Email:      "a.a@a.com",
+		Username:   "aaa",
+	},
 }

@@ -677,7 +677,7 @@ components:
         password: password
         userStatus: 6
         phone: phone
-        id: 0
+        id: "0"
         email: email
         username: username
       properties:
