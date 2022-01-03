@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -89,9 +88,7 @@ func UpdateGigWithForm(c *gin.Context) {
 
 		log.SetOutput(file)
 	*/
-	log.Println("UpdateGigWithForm")
 	id := c.Param("gigId")
-	log.Println("id: ", id)
 
 	bodyjson, err := c.GetRawData()
 	var body Gig
