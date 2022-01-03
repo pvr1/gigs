@@ -1,15 +1,18 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	sw "github.com/pvr1/gigs/go"
-	"github.com/pvr1/gin-oidc"
 	"log"
 	"net/url"
+
+	"github.com/gin-gonic/gin"
+	sw "github.com/pvr1/gigs/go"
+	gin_oidc "github.com/pvr1/gin-oidc"
 )
 
 func main() {
 	log.Printf("Server started")
+
+	gin.SetMode(gin.ReleaseMode)
 
 	router := sw.NewRouter()
 

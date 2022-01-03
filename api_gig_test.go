@@ -80,9 +80,9 @@ func TestGetGigs(t *testing.T) {
 }
 
 func TestUpdategig(t *testing.T) {
-	body := bytes.NewBufferString("userID=1")
+	body := bytes.NewBufferString("{\"id\": \"1\",\"category\":{},\"name\":\"Prutt\",\"description\":[\"descr\"],\"measurableoutcome\":[\"hahaha\"],\"status\":\"available\"}")
 	router := openapi.NewRouter()
-	w := performRequest(router, "PUT", "/v2/gig", body)
+	w := performRequest(router, "PUT", "/v2/gigs", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	/*
@@ -95,5 +95,5 @@ func TestUpdategig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "gig updated. Now it belongs to me.\n", a)
+	assert.Equal(t, "{\"Id\": \"1\",\"Category\": {\"Id\": 0,\"Name\": \"\"},\"Name\": \"Prutt\",\"Description\": [\"descr\"],\"Measurableoutcome\": [\"hahaha\"],\"Tags\": null,\"Status\": \"available\"}", a)
 }

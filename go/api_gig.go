@@ -2,7 +2,10 @@ package openapi
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
@@ -118,5 +121,26 @@ func UpdateGigWithForm(c *gin.Context) {
 
 // UploadFile - uploads an image
 func UploadFile(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	// Single file
+	file, err := c.FormFile("file")
+	log.Println("file: ", file)
+	if err != nil {
+		log.Println("Error uploading file - ", err)
+		c.String(http.StatusBadRequest, fmt.Sprintf("Error uploading: %s", err.Error()))
+		return
+	}
+
+	// Retrieve file information
+	extension := filepath.Ext(file.Filename)
+	// Generate random file name for the new uploaded file so it doesn't override the old file with same name
+	newFileName := uuid.NewV4().String() + extension
+
+	// The file is received, so let's save it
+	if err := c.SaveUploadedFile(file, "/tmp/"+newFileName); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "Unable to save the file",
+		})
+		return
+	}
+	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 }
