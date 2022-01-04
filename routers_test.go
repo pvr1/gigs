@@ -9,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	openapi "github.com/pvr1/gigs/go"
-	"github.com/pvr1/gigs/go/platform/authenticator"
 )
 
 func performRequest(r http.Handler, method, path string, body io.Reader) *httptest.ResponseRecorder {
@@ -27,14 +26,9 @@ func TestNewRouter(t *testing.T) {
 		// TODO: Add test cases.
 	}
 
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := openapi.NewRouter(auth); !reflect.DeepEqual(got, tt.want) {
+			if got := openapi.NewTestRouter(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewRouter() = %v, want %v", got, tt.want)
 			}
 		})

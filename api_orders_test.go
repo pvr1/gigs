@@ -6,17 +6,12 @@ import (
 	"testing"
 
 	openapi "github.com/pvr1/gigs/go"
-	"github.com/pvr1/gigs/go/platform/authenticator"
 	"github.com/stretchr/testify/assert"
 )
 
 func _TestGetTransaction(t *testing.T) {
 	body := bytes.NewBufferString("userID=1")
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	router := openapi.NewTestRouter()
 	w := performRequest(router, "GET", "/v2/store/order/1", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -35,11 +30,7 @@ func _TestGetTransaction(t *testing.T) {
 
 func _TestGetTransactions(t *testing.T) {
 	body := bytes.NewBufferString("userID=1")
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	router := openapi.NewTestRouter()
 	w := performRequest(router, "GET", "/v2/store/order/", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 

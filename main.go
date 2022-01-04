@@ -8,7 +8,6 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	sw "github.com/pvr1/gigs/go"
 	"github.com/pvr1/gigs/go/platform/authenticator"
 )
@@ -21,7 +20,7 @@ var (
 func main() {
 	log.Printf("Server started")
 
-	gin.SetMode(gin.ReleaseMode)
+	//gin.SetMode(gin.ReleaseMode)
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Failed to load the env vars: %v", err)
 	}

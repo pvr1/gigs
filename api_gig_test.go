@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	openapi "github.com/pvr1/gigs/go"
-	"github.com/pvr1/gigs/go/platform/authenticator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,11 +15,7 @@ func TestAddRemoveGig(t *testing.T) {
 	*/
 
 	body := bytes.NewBufferString("{\n    \"Id\": \"q\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Fix\",\n    \"Description\": [\n        \"jobba\"\n    ],\n    \"Measurableoutcome\": [\n        \"pengar\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}")
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	router := openapi.NewTestRouter()
 	w := performRequest(router, "POST", "/v2/gigs", body)
 	assert.Equal(t, http.StatusCreated, w.Code)
 
@@ -49,11 +44,7 @@ func TestGetGig(t *testing.T) {
 	*/
 
 	body := bytes.NewBufferString("userID=1")
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	router := openapi.NewTestRouter()
 	w := performRequest(router, "GET", "/v2/gig/1", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -76,11 +67,7 @@ func TestGetGigs(t *testing.T) {
 			"": "",
 		}
 	*/
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	router := openapi.NewTestRouter()
 	w := performRequest(router, "GET", "/v2/store/inventory", nil)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -90,11 +77,7 @@ func TestGetGigs(t *testing.T) {
 
 func TestUpdategig(t *testing.T) {
 	body := bytes.NewBufferString("{\"id\": \"1\",\"category\":{},\"name\":\"Prutt\",\"description\":[\"descr\"],\"measurableoutcome\":[\"hahaha\"],\"status\":\"available\"}")
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	router := openapi.NewTestRouter()
 	w := performRequest(router, "PUT", "/v2/gigs", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
