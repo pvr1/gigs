@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/gob"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,9 +33,12 @@ type Routes []Route
 // IsAuthenticated is a middleware that checks if
 // the user has already been authenticated previously.
 func IsAuthenticated(ctx *gin.Context) {
+	log.Println("IsAuthenticated function")
 	if sessions.Default(ctx).Get("profile") == nil {
-		ctx.Redirect(http.StatusSeeOther, "/")
+		log.Println("IsAuthenticated function - profile is nil")
+		ctx.Redirect(http.StatusSeeOther, "/login")
 	} else {
+		log.Println("IsAuthenticated function - continue")
 		ctx.Next()
 	}
 }
@@ -53,15 +57,15 @@ func NewRouter(auth *authenticator.Authenticator) *gin.Engine {
 	for _, route := range routes {
 		switch route.Method {
 		case http.MethodGet:
-			router.GET(route.Pattern, route.HandlerFunc)
+			router.GET(route.Pattern, IsAuthenticated, route.HandlerFunc)
 		case http.MethodPost:
-			router.POST(route.Pattern, route.HandlerFunc)
+			router.POST(route.Pattern, IsAuthenticated, route.HandlerFunc)
 		case http.MethodPut:
-			router.PUT(route.Pattern, route.HandlerFunc)
+			router.PUT(route.Pattern, IsAuthenticated, route.HandlerFunc)
 		case http.MethodPatch:
-			router.PATCH(route.Pattern, route.HandlerFunc)
+			router.PATCH(route.Pattern, IsAuthenticated, route.HandlerFunc)
 		case http.MethodDelete:
-			router.DELETE(route.Pattern, route.HandlerFunc)
+			router.DELETE(route.Pattern, IsAuthenticated, route.HandlerFunc)
 		}
 	}
 
@@ -185,12 +189,13 @@ func CallbackHandler(auth *authenticator.Authenticator) gin.HandlerFunc {
 
 // UserHandler for our logged-in user page.
 func UserHandler(ctx *gin.Context) {
-	session := sessions.Default(ctx)
-	profile := session.Get("profile")
+	//session := sessions.Default(ctx)
+	//profile := session.Get("profile")
 
-	myResponse := "<!DOCTYPE html><html><body><h1>My User Heading</h1><p>My User...</p></body></html>"
+	myResponse := "Try localhost:8080/v2/"
 
-	ctx.HTML(http.StatusOK, myResponse, profile)
+	ctx.String(http.StatusOK, myResponse)
+	//ctx.HTML(http.StatusOK, "landingpage.html", profile)
 }
 
 // generateRandomState generates a random string suitable for CSRF protection.
