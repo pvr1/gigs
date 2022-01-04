@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/coreos/go-oidc v2.2.1+incompatible
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.7
 	github.com/pvr1/gin-oidc v0.0.0-20171003060705-a73cb8756d41

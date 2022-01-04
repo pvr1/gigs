@@ -9,23 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAddgig(t *testing.T) {
+func TestAddRemoveGig(t *testing.T) {
 	/*
-		body := gin.H{
-			"Username":            "Kalle",
-			"FirstName":           "Carl",
-			"LastName":            "Karlsson",
-			"Email":               "carl@Karlsson.se",
-			"SocialSecuityNumber": "7001016939",
-			"Phone":               "+462120000",
-		}
+		{"Id": "q","Name": "Fix","Description": ["jobba"],"Measurableoutcome": ["pengar"],"Tags": null,"Status": "available"}
 	*/
 
-	body := bytes.NewBufferString("Username=Kalle&FirstName=Carl&LastName=Piper&Email=carl@piper.se&SocialSecuityNumber=7001016939&Phone=+462120000")
+	body := bytes.NewBufferString("{\n    \"Id\": \"q\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Fix\",\n    \"Description\": [\n        \"jobba\"\n    ],\n    \"Measurableoutcome\": [\n        \"pengar\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}")
 
 	router := openapi.NewRouter()
-	w := performRequest(router, "POST", "/v2/gig", body)
-	assert.Equal(t, http.StatusOK, w.Code)
+	w := performRequest(router, "POST", "/v2/gigs", body)
+	assert.Equal(t, http.StatusCreated, w.Code)
 
 	/*
 		var response map[string]string
@@ -37,7 +30,11 @@ func TestAddgig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "gig added\n", a)
+	assert.Equal(t, "{\n    \"Id\": \"q\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Fix\",\n    \"Description\": [\n        \"jobba\"\n    ],\n    \"Measurableoutcome\": [\n        \"pengar\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}", a)
+
+	w = performRequest(router, "DELETE", "/v2/gig/q", body)
+	assert.Equal(t, http.StatusOK, w.Code)
+
 }
 
 func TestGetGig(t *testing.T) {
@@ -62,7 +59,7 @@ func TestGetGig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "There you got your specific gig\n", a)
+	assert.Equal(t, "{\n    \"Id\": \"1\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Gig 1\",\n    \"Description\": [\n        \"description 1\"\n    ],\n    \"Measurableoutcome\": [\n        \"measurableoutcome 1\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}", a)
 }
 
 func TestGetGigs(t *testing.T) {
@@ -72,11 +69,11 @@ func TestGetGigs(t *testing.T) {
 		}
 	*/
 	router := openapi.NewRouter()
-	w := performRequest(router, "GET", "/v2/gig", nil)
+	w := performRequest(router, "GET", "/v2/store/inventory", nil)
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	a := w.Body.String()
-	assert.Equal(t, "Yep. A list of gig was delivered. Can you see it?? :-)\n", a)
+	//a := w.Body.String()
+	//assert.Equal(t, "Yep. A list of gig was delivered. Can you see it?? :-)\n", a)
 }
 
 func TestUpdategig(t *testing.T) {
