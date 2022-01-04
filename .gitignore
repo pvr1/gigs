@@ -4,3 +4,4 @@ logs.txt
 .openapi-generator/
 .vscode/
 .openapi-generator-ignore
+.env

@@ -77,7 +77,6 @@ func GetGigById(c *gin.Context) {
 		}
 	}
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
-
 }
 
 // UpdateGigWithForm - Updates a gig in the store with form data

@@ -7,7 +7,6 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.7
-	github.com/pvr1/gin-oidc v0.0.0-20171003060705-a73cb8756d41
 	github.com/stretchr/testify v1.7.0
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8

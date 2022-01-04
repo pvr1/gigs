@@ -52,7 +52,6 @@ func Index(c *gin.Context) {
 	myResponse += "/v2/openapi/yaml\n"
 
 	c.String(http.StatusOK, myResponse)
-
 }
 
 var routes = Routes{

@@ -2,11 +2,17 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	sw "github.com/pvr1/gigs/go"
+)
+
+var (
+	clientID     = os.Getenv("GOOGLE_OAUTH2_CLIENT_ID")
+	clientSecret = os.Getenv("GOOGLE_OAUTH2_CLIENT_SECRET")
 )
 
 func main() {
