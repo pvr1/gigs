@@ -1,9 +1,17 @@
 package openapi
 
 import (
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/gob"
 	"net/http"
+	"net/url"
+	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/pvr1/gigs/go/platform/authenticator"
 )
 
 // Route is the information for every URI.
@@ -21,9 +29,27 @@ type Route struct {
 // Routes is the list of the generated Route.
 type Routes []Route
 
+// IsAuthenticated is a middleware that checks if
+// the user has already been authenticated previously.
+func IsAuthenticated(ctx *gin.Context) {
+	if sessions.Default(ctx).Get("profile") == nil {
+		ctx.Redirect(http.StatusSeeOther, "/")
+	} else {
+		ctx.Next()
+	}
+}
+
 // NewRouter returns a new router.
-func NewRouter() *gin.Engine {
+func NewRouter(auth *authenticator.Authenticator) *gin.Engine {
 	router := gin.Default()
+
+	// To store custom types in our cookies,
+	// we must first register them using gob.Register
+	gob.Register(map[string]interface{}{})
+
+	store := cookie.NewStore([]byte("secret"))
+	router.Use(sessions.Sessions("auth-session", store))
+
 	for _, route := range routes {
 		switch route.Method {
 		case http.MethodGet:
@@ -39,7 +65,121 @@ func NewRouter() *gin.Engine {
 		}
 	}
 
+	router.GET("/login", LoginHandler(auth))
+	router.GET("/callback", CallbackHandler(auth))
+	router.GET("/user", IsAuthenticated, UserHandler)
+	router.GET("/logout", LogoutHandler)
+
 	return router
+}
+
+// LoginHandler for our login.
+func LoginHandler(auth *authenticator.Authenticator) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		state, err := generateRandomState()
+		if err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Save the state inside the session.
+		session := sessions.Default(ctx)
+		session.Set("state", state)
+		if err := session.Save(); err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		ctx.Redirect(http.StatusTemporaryRedirect, auth.AuthCodeURL(state))
+	}
+}
+
+// LogoutHandler for our logout
+func LogoutHandler(ctx *gin.Context) {
+	logoutUrl, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/v2/logout")
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	scheme := "http"
+	if ctx.Request.TLS != nil {
+		scheme = "https"
+	}
+
+	returnTo, err := url.Parse(scheme + "://" + ctx.Request.Host)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	parameters := url.Values{}
+	parameters.Add("returnTo", returnTo.String())
+	parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))
+	logoutUrl.RawQuery = parameters.Encode()
+
+	ctx.Redirect(http.StatusTemporaryRedirect, logoutUrl.String())
+}
+
+// CallbackHandler for our callback.
+func CallbackHandler(auth *authenticator.Authenticator) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		session := sessions.Default(ctx)
+		if ctx.Query("state") != session.Get("state") {
+			ctx.String(http.StatusBadRequest, "Invalid state parameter.")
+			return
+		}
+
+		// Exchange an authorization code for a token.
+		token, err := auth.Exchange(ctx.Request.Context(), ctx.Query("code"))
+		if err != nil {
+			ctx.String(http.StatusUnauthorized, "Failed to convert an authorization code into a token.")
+			return
+		}
+
+		idToken, err := auth.VerifyIDToken(ctx.Request.Context(), token)
+		if err != nil {
+			ctx.String(http.StatusInternalServerError, "Failed to verify ID Token.")
+			return
+		}
+
+		var profile map[string]interface{}
+		if err := idToken.Claims(&profile); err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		session.Set("access_token", token.AccessToken)
+		session.Set("profile", profile)
+		if err := session.Save(); err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Redirect to logged in page.
+		ctx.Redirect(http.StatusTemporaryRedirect, "/user")
+	}
+}
+
+// UserHandler for our logged-in user page.
+func UserHandler(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	profile := session.Get("profile")
+
+	ctx.HTML(http.StatusOK, "user.html", profile)
+}
+
+// generateRandomState generates a random string suitable for CSRF protection.
+func generateRandomState() (string, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	state := base64.StdEncoding.EncodeToString(b)
+
+	return state, nil
 }
 
 // Index is the index handler.

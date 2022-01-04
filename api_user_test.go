@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	openapi "github.com/pvr1/gigs/go"
+	"github.com/pvr1/gigs/go/platform/authenticator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +24,11 @@ func _TestAdduser(t *testing.T) {
 
 	body := bytes.NewBufferString("Username=Kalle&FirstName=Carl&LastName=Piper&Email=carl@piper.se&SocialSecuityNumber=7001016939&Phone=+462120000")
 
-	router := openapi.NewRouter()
+	auth, err := authenticator.New()
+	if err != nil {
+		t.Errorf("Failed to initialize the authenticator: %v", err)
+	}
+	router := openapi.NewRouter(auth)
 	w := performRequest(router, "POST", "/v2/user", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -48,7 +53,11 @@ func _TestGetuser(t *testing.T) {
 	*/
 
 	body := bytes.NewBufferString("userID=1")
-	router := openapi.NewRouter()
+	auth, err := authenticator.New()
+	if err != nil {
+		t.Errorf("Failed to initialize the authenticator: %v", err)
+	}
+	router := openapi.NewRouter(auth)
 	w := performRequest(router, "GET", "/v2/user/1", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -71,7 +80,11 @@ func _TestGetusers(t *testing.T) {
 			"": "",
 		}
 	*/
-	router := openapi.NewRouter()
+	auth, err := authenticator.New()
+	if err != nil {
+		t.Errorf("Failed to initialize the authenticator: %v", err)
+	}
+	router := openapi.NewRouter(auth)
 	w := performRequest(router, "GET", "/v2/user", nil)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -81,7 +94,11 @@ func _TestGetusers(t *testing.T) {
 
 func _TestUpdateuser(t *testing.T) {
 	body := bytes.NewBufferString("userID=1")
-	router := openapi.NewRouter()
+	auth, err := authenticator.New()
+	if err != nil {
+		t.Errorf("Failed to initialize the authenticator: %v", err)
+	}
+	router := openapi.NewRouter(auth)
 	w := performRequest(router, "PUT", "/v2/user", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 

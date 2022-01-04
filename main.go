@@ -5,9 +5,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	sw "github.com/pvr1/gigs/go"
+	"github.com/pvr1/gigs/go/platform/authenticator"
 )
 
 var (
@@ -19,8 +22,16 @@ func main() {
 	log.Printf("Server started")
 
 	gin.SetMode(gin.ReleaseMode)
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Failed to load the env vars: %v", err)
+	}
 
-	router := sw.NewRouter()
+	auth, err := authenticator.New()
+	if err != nil {
+		log.Fatalf("Failed to initialize the authenticator: %v", err)
+	}
+
+	router := sw.NewRouter(auth)
 
 	//protect all endpoint below this line
 	router.Use(cors.New(cors.Config{
