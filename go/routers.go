@@ -188,7 +188,9 @@ func UserHandler(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	profile := session.Get("profile")
 
-	ctx.HTML(http.StatusOK, "user.html", profile)
+	myResponse := "<!DOCTYPE html><html><body><h1>My User Heading</h1><p>My User...</p></body></html>"
+
+	ctx.HTML(http.StatusOK, myResponse, profile)
 }
 
 // generateRandomState generates a random string suitable for CSRF protection.
