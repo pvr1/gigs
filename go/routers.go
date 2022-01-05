@@ -3,7 +3,8 @@ package openapi
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/gob"
+
+	//"encoding/gob"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -15,7 +16,8 @@ import (
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+
+	//"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/pvr1/gigs/go/platform/authenticator"
 )
@@ -61,11 +63,11 @@ func NewRouter() *gin.Engine {
 
 	// To store custom types in our cookies,
 	// we must first register them using gob.Register
-	gob.Register(map[string]interface{}{})
+	//gob.Register(map[string]interface{}{})
 
-	store := cookie.NewStore([]byte("secret"))
-	router.Use(sessions.Sessions("auth-session", store))
-	issuerURL, err := url.Parse("http://localhost:8080/v2/")
+	//store := cookie.NewStore([]byte("secret"))
+	//router.Use(sessions.Sessions("auth-session", store))
+	issuerURL, err := url.Parse("https://dev-4du4iqv3.eu.auth0.com/")
 	if err != nil {
 		log.Fatalf("failed to parse the issuer url: %v", err)
 	}
@@ -75,7 +77,7 @@ func NewRouter() *gin.Engine {
 		provider.KeyFunc,
 		validator.RS256,
 		issuerURL.String(),
-		[]string{"https://dev-4du4iqv3.eu.auth0.com/api/v2/"},
+		[]string{"http://localhost:8080/v2/"},
 	)
 	if err != nil {
 		log.Fatalf("failed to set up the validator: %v", err)

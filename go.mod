@@ -3,7 +3,6 @@ module github.com/pvr1/gigs
 go 1.17
 
 require (
-	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/stretchr/testify v1.7.0
 	github.com/twinj/uuid v1.0.0
@@ -11,7 +10,6 @@ require (
 )
 
 require (
-	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.0 // indirect
