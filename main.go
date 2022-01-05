@@ -1,19 +1,34 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
-	"os"
+	"net/http"
+	"net/url"
+	"time"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/jwks"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
 	sw "github.com/pvr1/gigs/go"
 	"github.com/pvr1/gigs/go/platform/authenticator"
 )
 
-var (
-	clientID     = os.Getenv("GOOGLE_OAUTH2_CLIENT_ID")
-	clientSecret = os.Getenv("GOOGLE_OAUTH2_CLIENT_SECRET")
-)
+var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	claims := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+
+	payload, err := json.Marshal(claims)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(payload)
+})
 
 func main() {
 	log.Printf("Server started")
@@ -27,9 +42,28 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize the authenticator: %v", err)
 	}
+	issuerURL, err := url.Parse("https://<your tenant domain>/")
+	if err != nil {
+		log.Fatalf("failed to parse the issuer url: %v", err)
+	}
 
+	provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
+
+	// Set up the validator.
+	jwtValidator, err := validator.New(
+		provider.KeyFunc,
+		validator.RS256,
+		issuerURL.String(),
+		[]string{"<your api identifier>"},
+	)
+	if err != nil {
+		log.Fatalf("failed to set up the validator: %v", err)
+	}
+
+	// Set up the middleware.
+	middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
 	router := sw.NewRouter(auth)
-
+	router.Use(gin.WrapH(middleware.CheckJWT(handler)))
 	//protect all endpoint below this line
 	/*
 		router.Use(cors.New(cors.Config{
