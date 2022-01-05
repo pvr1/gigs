@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	openapi "github.com/pvr1/gigs/go"
-	"github.com/pvr1/gigs/go/platform/authenticator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -72,11 +71,15 @@ func _TestGetusers(t *testing.T) {
 			"": "",
 		}
 	*/
-	auth, err := authenticator.New()
-	if err != nil {
-		t.Errorf("Failed to initialize the authenticator: %v", err)
-	}
-	router := openapi.NewRouter(auth)
+	/*
+		auth, err := authenticator.New()
+		if err != nil {
+			t.Errorf("Failed to initialize the authenticator: %v", err)
+		}
+
+		router := openapi.NewRouter(auth)
+	*/
+	router := openapi.NewRouter()
 	w := performRequest(router, "GET", "/v2/user", nil)
 	assert.Equal(t, http.StatusOK, w.Code)
 
