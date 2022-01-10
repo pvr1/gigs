@@ -5,16 +5,11 @@ import (
 	"encoding/base64"
 
 	//"encoding/gob"
-	"encoding/json"
-	"log"
+
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/jwks"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gin-contrib/sessions"
 
 	//"github.com/gin-contrib/sessions/cookie"
@@ -37,26 +32,6 @@ type Route struct {
 // Routes is the list of the generated Route.
 type Routes []Route
 
-var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-	log.Println("Claims: {}", claims)
-
-	payload, err := json.Marshal(claims)
-	log.Println("Payload: {}", payload)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
-})
-
-func testJWT(middleware *jwtmiddleware.JWTMiddleware, handler http.HandlerFunc) http.Handler {
-	log.Println("CheckJWT")
-	return middleware.CheckJWT(handler)
-}
-
 // NewRouter returns a new router.
 func NewRouter() *gin.Engine {
 	router := gin.Default()
@@ -67,34 +42,18 @@ func NewRouter() *gin.Engine {
 
 	//store := cookie.NewStore([]byte("secret"))
 	//router.Use(sessions.Sessions("auth-session", store))
-	issuerURL, err := url.Parse("https://dev-4du4iqv3.eu.auth0.com/")
-	if err != nil {
-		log.Fatalf("failed to parse the issuer url: %v", err)
-	}
-
-	provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
-	jwtValidator, err := validator.New(
-		provider.KeyFunc,
-		validator.RS256,
-		issuerURL.String(),
-		[]string{"http://localhost:8080/v2/"},
-	)
-	if err != nil {
-		log.Fatalf("failed to set up the validator: %v", err)
-	}
-	middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
 	for _, route := range routes {
 		switch route.Method {
 		case http.MethodGet:
-			router.GET(route.Pattern, gin.WrapH(middleware.CheckJWT(handler)), route.HandlerFunc)
+			router.GET(route.Pattern, route.HandlerFunc)
 		case http.MethodPost:
-			router.POST(route.Pattern, gin.WrapH(middleware.CheckJWT(handler)), route.HandlerFunc)
+			router.POST(route.Pattern, route.HandlerFunc)
 		case http.MethodPut:
-			router.PUT(route.Pattern, gin.WrapH(middleware.CheckJWT(handler)), route.HandlerFunc)
+			router.PUT(route.Pattern, route.HandlerFunc)
 		case http.MethodPatch:
-			router.PATCH(route.Pattern, gin.WrapH(middleware.CheckJWT(handler)), route.HandlerFunc)
+			router.PATCH(route.Pattern, route.HandlerFunc)
 		case http.MethodDelete:
-			router.DELETE(route.Pattern, gin.WrapH(middleware.CheckJWT(handler)), route.HandlerFunc)
+			router.DELETE(route.Pattern, route.HandlerFunc)
 		}
 	}
 

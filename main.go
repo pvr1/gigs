@@ -1,34 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/joho/godotenv"
 
 	sw "github.com/pvr1/gigs/go"
 )
-
-var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-
-	payload, err := json.Marshal(claims)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
-})
-
-func testJWT(middleware *jwtmiddleware.JWTMiddleware, handler http.HandlerFunc) http.Handler {
-	log.Println("CheckJWT")
-	return middleware.CheckJWT(handler)
-}
 
 func main() {
 	log.Printf("Server started")
@@ -46,7 +24,8 @@ func main() {
 	*/
 
 	/*
-		issuerURL, err := url.Parse("http://localhost:8080/v2/")
+		issuerURL, err := url.Parse("https://dev-4du4iqv3.eu.auth0.com/")
+
 		if err != nil {
 			log.Fatalf("failed to parse the issuer url: %v", err)
 		}
@@ -58,7 +37,7 @@ func main() {
 			provider.KeyFunc,
 			validator.RS256,
 			issuerURL.String(),
-			[]string{"https://dev-4du4iqv3.eu.auth0.com/api/v2/"},
+			[]string{"http://localhost:8080/v2/"},
 		)
 		if err != nil {
 			log.Fatalf("failed to set up the validator: %v", err)
@@ -69,7 +48,7 @@ func main() {
 		middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
 	*/
 	router := sw.NewRouter()
-	//router.Use(gin.WrapH(testJWT(middleware, handler)))
+	//router.Use(gin.WrapH(middleware.CheckJWT(handler)))
 
 	//protect all endpoint below this line
 	/*
