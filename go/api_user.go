@@ -84,7 +84,14 @@ func LogoutUser(c *gin.Context) {
 
 // UpdateUser - Updated user
 func UpdateUser(c *gin.Context) {
-	id := c.Param("username")
+	/*
+		// If the file doesn't exist, create it or append to the file
+		file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.SetOutput(file)
+	*/
 
 	bodyjson, err := c.GetRawData()
 	var body User
@@ -94,15 +101,10 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if body.Username != id {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Username mismatch"})
-		return
-	}
-
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 	for i, a := range users {
-		if a.Username == id {
+		if a.Username == body.Username {
 			// Update the gig
 			DeepCopy(body, &users[i])
 			c.JSON(http.StatusOK, body)

@@ -9,23 +9,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func _TestAdduser(t *testing.T) {
+func TestAdduser(t *testing.T) {
 	/*
 		body := gin.H{
-			"Username":            "Kalle",
-			"FirstName":           "Carl",
-			"LastName":            "Karlsson",
-			"Email":               "carl@Karlsson.se",
-			"SocialSecuityNumber": "7001016939",
-			"Phone":               "+462120000",
+					"FirstName":  "Kalle",
+					"LastName":   "Carlsson",
+					"Password":   "pwd",
+					"UserStatus": 0,
+					"Phone":      "888-888-8888",
+					"Id":         "13",
+					"Email":      "a.a@a.com",
+					"Username":   "kallekula",
 		}
 	*/
 
-	body := bytes.NewBufferString("Username=Kalle&FirstName=Carl&LastName=Piper&Email=carl@piper.se&SocialSecuityNumber=7001016939&Phone=+462120000")
+	str := "{\"Id\":\"13\",\"Username\":\"kallekula\",\"FirstName\":\"Kalle\",\"LastName\":\"Kula\",\"Email\":\"a.a@a.com\",\"Password\":\"pwd\",\"Phone\":\"888-888-8888\",\"UserStatus\":1,\"Role\":null}"
+	body := bytes.NewBufferString(str)
 
 	router := openapi.NewTestRouter()
 	w := performRequest(router, "POST", "/v2/user", body)
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusCreated, w.Code)
 
 	/*
 		var response map[string]string
@@ -36,20 +39,20 @@ func _TestAdduser(t *testing.T) {
 		assert.Equal(t, "hello", value)
 	*/
 
-	a := w.Body.String()
-	assert.Equal(t, "user added\n", a)
+	//a := w.Body.String()
+	//assert.Equal(t, "user added\n", a)
 }
 
-func _TestGetuser(t *testing.T) {
+func TestGetuser(t *testing.T) {
 	/*
 		body := gin.H{
 			"userID": "1",
 		}
 	*/
 
-	body := bytes.NewBufferString("userID=1")
+	body := bytes.NewBufferString("")
 	router := openapi.NewTestRouter()
-	w := performRequest(router, "GET", "/v2/user/1", body)
+	w := performRequest(router, "GET", "/v2/user/aaa", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	/*
@@ -62,7 +65,7 @@ func _TestGetuser(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "There you got your specific user\n", a)
+	assert.Equal(t, "{\"Id\":\"0\",\"Username\":\"aaa\",\"FirstName\":\"firstName\",\"LastName\":\"lastName\",\"Email\":\"a.a@a.com\",\"Password\":\"password\",\"Phone\":\"888-888-8888\",\"UserStatus\":6,\"Role\":null}", a)
 }
 
 func _TestGetusers(t *testing.T) {
@@ -87,10 +90,10 @@ func _TestGetusers(t *testing.T) {
 	assert.Equal(t, "Yep. A list of user was delivered. Can you see it?? :-)\n", a)
 }
 
-func _TestUpdateuser(t *testing.T) {
-	body := bytes.NewBufferString("userID=1")
+func TestUpdateuser(t *testing.T) {
+	body := bytes.NewBufferString("{\"Id\":\"0\",\"Username\":\"aaa\",\"FirstName\":\"Lasse\",\"LastName\":\"lastName\",\"Email\":\"a.a@a.com\",\"Password\":\"password\",\"Phone\":\"888-888-8888\",\"UserStatus\":6,\"Role\":null}")
 	router := openapi.NewTestRouter()
-	w := performRequest(router, "PUT", "/v2/user", body)
+	w := performRequest(router, "PUT", "/v2/user/aaa", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	/*
@@ -103,5 +106,5 @@ func _TestUpdateuser(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "user updated. Now it belongs to me.\n", a)
+	assert.Equal(t, "{\"Id\":\"0\",\"Username\":\"aaa\",\"FirstName\":\"Lasse\",\"LastName\":\"lastName\",\"Email\":\"a.a@a.com\",\"Password\":\"password\",\"Phone\":\"888-888-8888\",\"UserStatus\":6,\"Role\":null}", a)
 }
