@@ -22,8 +22,8 @@ tags:
     description: Find out more
     url: http://swagger.io
   name: gigs
-- description: Access to Gigstore orders
-  name: gigsorders
+- description: Access to Gigstore transactions
+  name: gigstransactions
 - description: Operations about user
   externalDocs:
     description: Find out more about our store
@@ -330,43 +330,43 @@ paths:
       summary: Returns gig inventories by status
       tags:
       - store
-  /store/order:
+  /store/transaction:
     post:
-      operationId: placeOrder
+      operationId: placetransaction
       requestBody:
         content:
           '*/*':
             schema:
-              $ref: '#/components/schemas/Order'
-        description: order placed for purchasing the gig
+              $ref: '#/components/schemas/transaction'
+        description: transaction placed for purchasing the gig
         required: true
       responses:
         "200":
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/transaction'
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/transaction'
           description: successful operation
         "400":
           content: {}
-          description: Invalid Order
-      summary: Place an order for a gig
+          description: Invalid transaction
+      summary: Place an transaction for a gig
       tags:
       - store
       x-codegen-request-body-name: body
-  /store/order/{orderId}:
+  /store/transaction/{transactionId}:
     delete:
       description: For valid response try integer IDs with positive integer value.         Negative
         or non-integer values will generate API errors
-      operationId: deleteOrder
+      operationId: deletetransaction
       parameters:
-      - description: ID of the order that needs to be deleted
+      - description: ID of the transaction that needs to be deleted
         explode: false
         in: path
-        name: orderId
+        name: transactionId
         required: true
         schema:
           format: int64
@@ -379,19 +379,19 @@ paths:
           description: Invalid ID supplied
         "404":
           content: {}
-          description: Order not found
-      summary: Delete purchase order by ID
+          description: transaction not found
+      summary: Delete purchase transaction by ID
       tags:
       - store
     get:
       description: For valid response try integer IDs with value >= 1 and <= 10.         Other
         values will generated exceptions
-      operationId: getOrderById
+      operationId: gettransactionById
       parameters:
       - description: ID of gig that needs to be fetched
         explode: false
         in: path
-        name: orderId
+        name: transactionId
         required: true
         schema:
           format: int64
@@ -404,18 +404,18 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/transaction'
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/transaction'
           description: successful operation
         "400":
           content: {}
           description: Invalid ID supplied
         "404":
           content: {}
-          description: Order not found
-      summary: Find purchase order by ID
+          description: transaction not found
+      summary: Find purchase transaction by ID
       tags:
       - store
   /user:
@@ -623,7 +623,7 @@ paths:
       x-codegen-request-body-name: body
 components:
   schemas:
-    Order:
+    transaction:
       example:
         price: 1
         id: uuid
@@ -645,7 +645,7 @@ components:
           format: date-time
           type: string
         status:
-          description: Order Status
+          description: transaction Status
           enum:
           - placed
           - approved
@@ -656,7 +656,7 @@ components:
           type: boolean
       type: object
       xml:
-        name: Order
+        name: transaction
     Category:
       example:
         name: name

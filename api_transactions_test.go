@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func _TestGetTransaction(t *testing.T) {
-	body := bytes.NewBufferString("userID=1")
+func TestGetTransaction(t *testing.T) {
+	body := bytes.NewBufferString("")
 	router := openapi.NewTestRouter()
-	w := performRequest(router, "GET", "/v2/store/order/1", body)
+	w := performRequest(router, "GET", "/v2/store/transaction/1", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	/*
@@ -25,13 +25,13 @@ func _TestGetTransaction(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "There you got your specific transaction\n", a)
+	assert.Equal(t, "{\"Id\":\"1\",\"GigId\":\"1\",\"Price\":100,\"ShipDate\":\"2012-11-01T22:08:41Z\",\"Status\":\"pending\",\"Complete\":false}", a)
 }
 
 func _TestGetTransactions(t *testing.T) {
-	body := bytes.NewBufferString("userID=1")
+	body := bytes.NewBufferString("")
 	router := openapi.NewTestRouter()
-	w := performRequest(router, "GET", "/v2/store/order/", body)
+	w := performRequest(router, "GET", "/v2/store/transaction/", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	/*
@@ -44,5 +44,5 @@ func _TestGetTransactions(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "Get list of Transactions originating from FX Orders and Payments\n", a)
+	assert.Equal(t, "Get list of Transactions originating from FX transactions and Payments\n", a)
 }

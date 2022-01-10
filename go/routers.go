@@ -271,10 +271,10 @@ var routes = Routes{
 	},
 
 	{
-		"DeleteOrder",
+		"Deletetransaction",
 		http.MethodDelete,
-		"/v2/store/order/:orderId",
-		DeleteOrder,
+		"/v2/store/transaction/:transactionId",
+		DeleteTransaction,
 	},
 
 	{
@@ -285,17 +285,17 @@ var routes = Routes{
 	},
 
 	{
-		"GetOrderById",
+		"GettransactionById",
 		http.MethodGet,
-		"/v2/store/order/:orderId",
-		GetOrderById,
+		"/v2/store/transaction/:transactionId",
+		GetTransactionById,
 	},
 
 	{
-		"PlaceOrder",
+		"Placetransaction",
 		http.MethodPost,
-		"/v2/store/order",
-		PlaceOrder,
+		"/v2/store/transaction",
+		PlaceTransaction,
 	},
 
 	{
