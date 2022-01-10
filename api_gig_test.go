@@ -11,10 +11,10 @@ import (
 
 func TestAddRemoveGig(t *testing.T) {
 	/*
-		{"Id": "q","Name": "Fix","Description": ["jobba"],"Measurableoutcome": ["pengar"],"Tags": null,"Status": "available"}
+		{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Hepp\",\"Description\":[\"descr\"],\"Measurableoutcome\":[\"hahaha\"],\"Tags\":null,\"Status\":\"available\"}"
 	*/
 
-	body := bytes.NewBufferString("{\n    \"Id\": \"q\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Fix\",\n    \"Description\": [\n        \"jobba\"\n    ],\n    \"Measurableoutcome\": [\n        \"pengar\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}")
+	body := bytes.NewBufferString("{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Hepp\",\"Description\":[\"descr\"],\"Measurableoutcome\":[\"hahaha\"],\"Tags\":null,\"Status\":\"available\"}")
 	router := openapi.NewTestRouter()
 	w := performRequest(router, "POST", "/v2/gigs", body)
 	assert.Equal(t, http.StatusCreated, w.Code)
@@ -29,9 +29,9 @@ func TestAddRemoveGig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "{\n    \"Id\": \"q\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Fix\",\n    \"Description\": [\n        \"jobba\"\n    ],\n    \"Measurableoutcome\": [\n        \"pengar\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}", a)
+	assert.Equal(t, "{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Hepp\",\"Description\":[\"descr\"],\"Measurableoutcome\":[\"hahaha\"],\"Tags\":null,\"Status\":\"available\"}", a)
 
-	w = performRequest(router, "DELETE", "/v2/gig/q", body)
+	w = performRequest(router, "DELETE", "/v2/gig/1", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 }
@@ -58,7 +58,7 @@ func TestGetGig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "{\n    \"Id\": \"1\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Gig 1\",\n    \"Description\": [\n        \"description 1\"\n    ],\n    \"Measurableoutcome\": [\n        \"measurableoutcome 1\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}", a)
+	assert.Equal(t, "{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Hepp\",\"Description\":[\"descr\"],\"Measurableoutcome\":[\"hahaha\"],\"Tags\":null,\"Status\":\"available\"}", a)
 }
 
 func TestGetGigs(t *testing.T) {
@@ -91,5 +91,5 @@ func TestUpdategig(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "{\n    \"Id\": \"1\",\n    \"Category\": {\n        \"Id\": 0,\n        \"Name\": \"\"\n    },\n    \"Name\": \"Prutt\",\n    \"Description\": [\n        \"descr\"\n    ],\n    \"Measurableoutcome\": [\n        \"hahaha\"\n    ],\n    \"Tags\": null,\n    \"Status\": \"available\"\n}", a)
+	assert.Equal(t, "{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Prutt\",\"Description\":[\"descr\"],\"Measurableoutcome\":[\"hahaha\"],\"Tags\":null,\"Status\":\"available\"}", a)
 }
