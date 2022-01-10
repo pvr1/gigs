@@ -6,7 +6,7 @@ type Tag struct {
 	Name string `bson:"name,omitempty"`
 }
 
-// The possible values for the meta tag
+// Some possible values for the meta tag
 var tags = []Tag{
 	{Id: 1, Name: "tag"},
 	{Id: 2, Name: "1"},

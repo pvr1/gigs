@@ -11,10 +11,11 @@ import (
 // OpenAPIjson - Get OpenAPI 3.0 JSON
 func OpenAPIjson(c *gin.Context) {
 	file, err := os.Open("./api/openapi.json")
-	defer file.Close()
 	if err != nil {
 		c.String(http.StatusOK, "Could not find openapi file")
 		return
+	} else {
+		defer file.Close()
 	}
 
 	filecontent, err := ioutil.ReadAll(file)
@@ -29,10 +30,11 @@ func OpenAPIjson(c *gin.Context) {
 // OpenAPIyaml - Get OpenAPI 3.0 YAML
 func OpenAPIyaml(c *gin.Context) {
 	file, err := os.Open("./api/openapi.yaml")
-	defer file.Close()
 	if err != nil {
 		c.String(http.StatusOK, "Could not find openapi file")
 		return
+	} else {
+		defer file.Close()
 	}
 
 	filecontent, err := ioutil.ReadAll(file)
