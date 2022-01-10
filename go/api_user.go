@@ -17,14 +17,14 @@ func CreateUser(c *gin.Context) {
 	// Call BindJSON to bind the received JSON to
 	// newgig.
 	if err := c.BindJSON(&tmpUser); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
 	tmpUser.Id = uuid.NewV4().String()
 
 	// Add the new gig to the slice.
 	users = append(users, tmpUser)
-	c.IndentedJSON(http.StatusCreated, tmpUser)
+	c.JSON(http.StatusCreated, tmpUser)
 }
 
 // CreateUsersWithArrayInput - Creates list of users with given input array
@@ -50,11 +50,11 @@ func DeleteUser(c *gin.Context) {
 	for i, a := range users {
 		if a.Username == id {
 			users = RemoveUser(users, i)
-			c.IndentedJSON(http.StatusOK, a)
+			c.JSON(http.StatusOK, a)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 }
 
 // GetUserByName - Get user by user name
@@ -65,11 +65,11 @@ func GetUserByName(c *gin.Context) {
 
 	for _, a := range users {
 		if a.Username == id {
-			c.IndentedJSON(http.StatusOK, a)
+			c.JSON(http.StatusOK, a)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 }
 
 // LoginUser - Logs user into the system
@@ -90,12 +90,12 @@ func UpdateUser(c *gin.Context) {
 	var body User
 	json.Unmarshal(bodyjson, &body)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
 
 	if body.Username != id {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Username mismatch"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Username mismatch"})
 		return
 	}
 
@@ -105,9 +105,9 @@ func UpdateUser(c *gin.Context) {
 		if a.Username == id {
 			// Update the gig
 			DeepCopy(body, &users[i])
-			c.IndentedJSON(http.StatusOK, body)
+			c.JSON(http.StatusOK, body)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "User not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 }

@@ -24,7 +24,7 @@ func AddGig(c *gin.Context) {
 
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
-	c.IndentedJSON(http.StatusCreated, mygig)
+	c.JSON(http.StatusCreated, mygig)
 }
 
 // RemoveGig - Helper function to remove a gig from the slice
@@ -40,11 +40,11 @@ func DeleteGig(c *gin.Context) {
 	for i, a := range gigs {
 		if a.Id == id {
 			gigs = RemoveGig(gigs, i)
-			c.IndentedJSON(http.StatusOK, a)
+			c.JSON(http.StatusOK, a)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
 // FindGigsByStatus - Finds Gigs by status
@@ -61,7 +61,7 @@ func FindGigsByStatus(c *gin.Context) {
 		}
 	}
 
-	c.IndentedJSON(http.StatusOK, tmp)
+	c.JSON(http.StatusOK, tmp)
 }
 
 // GetGigById - Find gig by ID
@@ -72,11 +72,11 @@ func GetGigById(c *gin.Context) {
 
 	for _, a := range gigs {
 		if a.Id == id {
-			c.IndentedJSON(http.StatusOK, a)
+			c.JSON(http.StatusOK, a)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
 // UpdateGigWithForm - Updates a gig in the store with form data
@@ -96,12 +96,12 @@ func UpdateGigWithForm(c *gin.Context) {
 	var body Gig
 	json.Unmarshal(bodyjson, &body)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
 
 	if body.Id != id {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Id mismatch"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Id mismatch"})
 		return
 	}
 
@@ -111,11 +111,11 @@ func UpdateGigWithForm(c *gin.Context) {
 		if a.Id == id {
 			// Update the gig
 			DeepCopy(body, &gigs[i])
-			c.IndentedJSON(http.StatusOK, body)
+			c.JSON(http.StatusOK, body)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
 // UploadFile - uploads an image

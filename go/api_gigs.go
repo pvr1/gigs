@@ -28,7 +28,7 @@ func UpdateGig(c *gin.Context) {
 	var body Gig
 	json.Unmarshal(bodyjson, &body)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
 
@@ -38,9 +38,9 @@ func UpdateGig(c *gin.Context) {
 		if a.Id == body.Id {
 			// Update the gig
 			DeepCopy(body, &gigs[i])
-			c.IndentedJSON(http.StatusOK, body)
+			c.JSON(http.StatusOK, body)
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
+	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
