@@ -28,10 +28,10 @@ func TestGetTransaction(t *testing.T) {
 	assert.Equal(t, "{\"Id\":\"1\",\"GigId\":\"1\",\"Price\":100,\"ShipDate\":\"2012-11-01T22:08:41Z\",\"Status\":\"pending\",\"Complete\":false}", a)
 }
 
-func _TestGetTransactions(t *testing.T) {
+func TestGetTransactions(t *testing.T) {
 	body := bytes.NewBufferString("")
 	router := openapi.NewTestRouter()
-	w := performRequest(router, "GET", "/v2/store/transaction/", body)
+	w := performRequest(router, "GET", "/v2/store/transaction/1", body)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	/*
@@ -44,5 +44,5 @@ func _TestGetTransactions(t *testing.T) {
 	*/
 
 	a := w.Body.String()
-	assert.Equal(t, "Get list of Transactions originating from FX transactions and Payments\n", a)
+	assert.Equal(t, "{\"Id\":\"1\",\"GigId\":\"1\",\"Price\":100,\"ShipDate\":\"2012-11-01T22:08:41Z\",\"Status\":\"pending\",\"Complete\":false}", a)
 }
