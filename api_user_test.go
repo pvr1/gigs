@@ -68,7 +68,7 @@ func TestGetuser(t *testing.T) {
 	assert.Equal(t, "{\"Id\":\"0\",\"Username\":\"aaa\",\"FirstName\":\"firstName\",\"LastName\":\"lastName\",\"Email\":\"a.a@a.com\",\"Password\":\"password\",\"Phone\":\"888-888-8888\",\"UserStatus\":6,\"Role\":null}", a)
 }
 
-func _TestGetusers(t *testing.T) {
+func TestGetusers(t *testing.T) {
 	/*
 		body := gin.H{
 			"": "",
@@ -83,11 +83,11 @@ func _TestGetusers(t *testing.T) {
 		router := openapi.NewRouter(auth)
 	*/
 	router := openapi.NewRouter()
-	w := performRequest(router, "GET", "/v2/user", nil)
+	w := performRequest(router, "GET", "/v2/user/aaa", nil)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	a := w.Body.String()
-	assert.Equal(t, "Yep. A list of user was delivered. Can you see it?? :-)\n", a)
+	assert.Equal(t, "{\"Id\":\"0\",\"Username\":\"aaa\",\"FirstName\":\"firstName\",\"LastName\":\"lastName\",\"Email\":\"a.a@a.com\",\"Password\":\"password\",\"Phone\":\"888-888-8888\",\"UserStatus\":6,\"Role\":null}", a)
 }
 
 func TestUpdateuser(t *testing.T) {
