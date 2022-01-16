@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 	"github.com/twinj/uuid"
 )
 
@@ -35,10 +37,26 @@ func RemoveGig(s []Gig, index int) []Gig {
 // DeleteGig - Deletes a gig
 func DeleteGig(c *gin.Context) {
 	id := c.Param("gigId")
+
+	/*
+		file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.SetOutput(file)
+	*/
+	//First try at blackfriday and bluemonday
+	//log.Println("id: ", id)
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	//log.Println("unsafe: ", unsafe)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+	//log.Println("html: ", html)
+
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 	for i, a := range gigs {
-		if a.Id == id {
+		if a.Id == html {
 			gigs = RemoveGig(gigs, i)
 			c.JSON(http.StatusOK, a)
 			return
