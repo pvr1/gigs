@@ -1,9 +1,37 @@
 package openapi
 
+/* Example on sanitizer
+import (
+	"html/template"
+	"net/http"
+
+	"github.com/flosch/pongo2"
+	"github.com/gin-gonic/gin"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
+)
+
+func postHandler(c *gin.Context) {
+	id := c.Param("id")
+	var post Post
+	db.Where("id = ?", id).First(&post)
+
+	unsafe := blackfriday.MarkdownCommon([]byte(post.Body))
+	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+
+	c.HTML(http.StatusOK, "post.html", pongo2.Context{
+		"Post":     post,
+		"Markdown": template.HTML(html),
+	})
+}
+*/
+
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 	"github.com/twinj/uuid"
 )
 
@@ -15,10 +43,13 @@ func RemoveTransaction(s []transaction, index int) []transaction {
 // DeleteTransaction - Delete purchase transaction by ID
 func DeleteTransaction(c *gin.Context) {
 	id := c.Param("transactionId")
+	//First try at blackfriday and bluemonday
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
 	// Loop over the list of transactions, looking for
 	// an transaction whose ID value matches the parameter.
 	for i, a := range transactions {
-		if a.Id == id {
+		if a.Id == html {
 			transactions = RemoveTransaction(transactions, i)
 			c.JSON(http.StatusOK, a)
 			return
