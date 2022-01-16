@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
 	"github.com/twinj/uuid"
 )
 
@@ -22,7 +24,13 @@ func CreateUser(c *gin.Context) {
 	}
 	tmpUser.Id = uuid.NewV4().String()
 
-	// Add the new gig to the slice.
+	//Validate the user
+	if tmpUser.Username == "" || tmpUser.Password == "" || tmpUser.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": tmpUser.Username + " " + tmpUser.Password + " " + tmpUser.Email})
+		return
+	}
+
+	// Add the new user to the slice.
 	users = append(users, tmpUser)
 	c.JSON(http.StatusCreated, tmpUser)
 }
@@ -45,10 +53,14 @@ func RemoveUser(s []User, index int) []User {
 // DeleteUser - Delete user
 func DeleteUser(c *gin.Context) {
 	id := c.Param("username")
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 	for i, a := range users {
-		if a.Username == id {
+		if a.Username == html {
 			users = RemoveUser(users, i)
 			c.JSON(http.StatusOK, a)
 			return
@@ -60,11 +72,15 @@ func DeleteUser(c *gin.Context) {
 // GetUserByName - Get user by user name
 func GetUserByName(c *gin.Context) {
 	id := c.Param("username")
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 
 	for _, a := range users {
-		if a.Username == id {
+		if a.Username == html {
 			c.JSON(http.StatusOK, a)
 			return
 		}
@@ -94,10 +110,25 @@ func UpdateUser(c *gin.Context) {
 	*/
 
 	bodyjson, err := c.GetRawData()
-	var body User
-	json.Unmarshal(bodyjson, &body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	var body User
+
+	//unsafe := blackfriday2.Run(bodyjson)
+	//html := bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe))
+
+	json.Unmarshal(bodyjson, &body)
+
+	//Validate the user
+	if body.Username == "" || body.Password == "" || body.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed user data"})
+		//c.JSON(http.StatusBadRequest, gin.H{"message": "bodyjson: " + string(bodyjson) + "\n unsafe: " + string(unsafe) + "\n html: " + string(html) + " " + body.Username + " " + body.Password + " " + body.Email})
+		//c.JSON(http.StatusBadRequest, gin.H{"message": "unsafe: " + string(unsafe)})
+		//c.JSON(http.StatusBadRequest, gin.H{"message": "html: " + string(html)})
+		//c.JSON(http.StatusBadRequest, gin.H{"message": "Username: " + body.Username + "Password: " + body.Password + "Email: " + body.Email})
 		return
 	}
 

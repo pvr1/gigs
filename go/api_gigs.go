@@ -25,12 +25,16 @@ func UpdateGig(c *gin.Context) {
 		log.SetOutput(file)
 	*/
 	bodyjson, err := c.GetRawData()
-	var body Gig
-	json.Unmarshal(bodyjson, &body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
+	var body Gig
+
+	//unsafe := blackfriday.Run(bodyjson)
+	//html := bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe))
+
+	json.Unmarshal(bodyjson, &body)
 
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.

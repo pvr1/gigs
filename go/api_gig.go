@@ -24,6 +24,12 @@ func AddGig(c *gin.Context) {
 		return
 	}
 
+	//Validadte the gig
+	if mygig.Name == "" || mygig.Description == nil || mygig.Status == "" || mygig.Measurableoutcome == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required gig fields"})
+		return
+	}
+
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
 	c.JSON(http.StatusCreated, mygig)
@@ -67,14 +73,22 @@ func DeleteGig(c *gin.Context) {
 
 // FindGigsByStatus - Finds Gigs by status
 func FindGigsByStatus(c *gin.Context) {
-	status, _ := c.GetQuery("status")
+	status, err := c.GetQuery("status")
+	if err {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	unsafe := blackfriday.SanitizedAnchorName(status)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 
 	tmp := []Gig{}
 
 	for _, a := range gigs {
-		if a.Status == status {
+		if a.Status == html {
 			tmp = append(tmp, a)
 		}
 	}
@@ -85,11 +99,15 @@ func FindGigsByStatus(c *gin.Context) {
 // GetGigById - Find gig by ID
 func GetGigById(c *gin.Context) {
 	id := c.Param("gigId")
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 
 	for _, a := range gigs {
-		if a.Id == id {
+		if a.Id == html {
 			c.JSON(http.StatusOK, a)
 			return
 		}
@@ -110,6 +128,9 @@ func UpdateGigWithForm(c *gin.Context) {
 	*/
 	id := c.Param("gigId")
 
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
 	bodyjson, err := c.GetRawData()
 	var body Gig
 	json.Unmarshal(bodyjson, &body)
@@ -126,7 +147,7 @@ func UpdateGigWithForm(c *gin.Context) {
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
 	for i, a := range gigs {
-		if a.Id == id {
+		if a.Id == html {
 			// Update the gig
 			DeepCopy(body, &gigs[i])
 			c.JSON(http.StatusOK, body)

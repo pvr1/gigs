@@ -28,6 +28,7 @@ func postHandler(c *gin.Context) {
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/microcosm-cc/bluemonday"
@@ -60,13 +61,24 @@ func DeleteTransaction(c *gin.Context) {
 
 // GetInventory - Returns gig inventories by status
 func GetInventory(c *gin.Context) {
-	_, err := c.GetQuery("RegisteredClaims")
+	status, err := c.GetQuery("RegisteredClaims")
 	if err {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid claims"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gigs)
+	unsafe := blackfriday.SanitizedAnchorName(status)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	tmp := []transaction{}
+
+	for _, a := range transactions {
+		if a.Status == html {
+			tmp = append(tmp, a)
+		}
+	}
+
+	c.JSON(http.StatusOK, tmp)
 }
 
 // GetTransactionById - Find purchase transaction by ID
@@ -75,8 +87,11 @@ func GetTransactionById(c *gin.Context) {
 	// Loop over the list of transactions, looking for
 	// an transaction whose ID value matches the parameter.
 
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
 	for _, a := range transactions {
-		if a.Id == id {
+		if a.Id == html {
 			c.JSON(http.StatusOK, a)
 			return
 		}
@@ -92,6 +107,15 @@ func PlaceTransaction(c *gin.Context) {
 	// mypurchase.
 	mypurchase.Id = uuid.NewV4().String()
 	if err := c.BindJSON(&mypurchase); err != nil {
+		return
+	}
+
+	today := time.Now()
+	//Validate the transaction
+	if mypurchase.GigId == "" || mypurchase.Status == "" ||
+		mypurchase.Price == 0 || mypurchase.Complete ||
+		today.After(mypurchase.ShipDate) {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid transaction"})
 		return
 	}
 
