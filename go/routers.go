@@ -271,28 +271,28 @@ var routes = Routes{
 	},
 
 	{
-		"Deletetransaction",
+		"DeleteTransaction",
 		http.MethodDelete,
 		"/v2/store/transaction/:transactionId",
 		DeleteTransaction,
 	},
 
 	{
-		"GetInventory",
+		"GetTransactions",
 		http.MethodGet,
 		"/v2/store/inventory",
-		GetInventory,
+		GetTransactions,
 	},
 
 	{
-		"GettransactionById",
+		"GetTransactionById",
 		http.MethodGet,
 		"/v2/store/transaction/:transactionId",
 		GetTransactionById,
 	},
 
 	{
-		"Placetransaction",
+		"PlaceTransaction",
 		http.MethodPost,
 		"/v2/store/transaction",
 		PlaceTransaction,

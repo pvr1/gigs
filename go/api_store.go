@@ -59,8 +59,8 @@ func DeleteTransaction(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
-// GetInventory - Returns gig inventories by status
-func GetInventory(c *gin.Context) {
+// GetTransactions - Returns gig inventories by status
+func GetTransactions(c *gin.Context) {
 	status, err := c.GetQuery("RegisteredClaims")
 	if err {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid claims"})
