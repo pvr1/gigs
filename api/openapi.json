@@ -65,9 +65,25 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "content": {},
+            "description": "successful operation"
+          },
+          "401": {
+            "content": {},
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {},
+            "description": "Forbidden"
+          },
           "405": {
             "content": {},
             "description": "Invalid input"
+          },
+          "406": {
+            "content": {},
+            "description": "Already exists"
           }
         },
         "security": [
@@ -103,6 +119,10 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "content": {},
+            "description": "successful operation"
+          },
           "400": {
             "content": {},
             "description": "Invalid ID supplied"
@@ -114,6 +134,10 @@
           "405": {
             "content": {},
             "description": "Validation exception"
+          },
+          "406": {
+            "content": {},
+            "description": "Already exists"
           }
         },
         "security": [
@@ -152,7 +176,8 @@
                 ],
                 "type": "string"
               },
-              "type": "array"
+              "type": "array",
+              "maxItems": 50
             },
             "style": "form"
           }
@@ -165,7 +190,8 @@
                   "items": {
                     "$ref": "#/components/schemas/Gig"
                   },
-                  "type": "array"
+                  "type": "array",
+                  "maxItems": 100
                 }
               },
               "application/json": {
@@ -173,7 +199,8 @@
                   "items": {
                     "$ref": "#/components/schemas/Gig"
                   },
-                  "type": "array"
+                  "type": "array",
+                  "maxItems": 100
                 }
               }
             },
@@ -182,6 +209,10 @@
           "400": {
             "content": {},
             "description": "Invalid status value"
+          },
+          "403": {
+            "content": {},
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -211,10 +242,12 @@
             "name": "tags",
             "required": true,
             "schema": {
+              "$ref": "#/components/schemas/Tag",
               "items": {
                 "type": "string"
               },
-              "type": "array"
+              "type": "array",
+              "maxItems": 50
             },
             "style": "form"
           }
@@ -227,7 +260,8 @@
                   "items": {
                     "$ref": "#/components/schemas/Gig"
                   },
-                  "type": "array"
+                  "type": "array",
+                  "maxItems": 100
                 }
               },
               "application/json": {
@@ -235,7 +269,8 @@
                   "items": {
                     "$ref": "#/components/schemas/Gig"
                   },
-                  "type": "array"
+                  "type": "array",
+                  "maxItems": 100
                 }
               }
             },
@@ -244,6 +279,14 @@
           "400": {
             "content": {},
             "description": "Invalid tag value"
+          },
+          "401": {
+            "content": {},
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {},
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -270,7 +313,9 @@
             "name": "api_key",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 15,
+              "minLength": 1
             },
             "style": "simple"
           },
@@ -281,20 +326,41 @@
             "name": "gigId",
             "required": true,
             "schema": {
-              "format": "int64",
-              "type": "integer"
+              "format": "string",
+              "type": "string",
+              "maxLength": 32
             },
             "style": "simple"
           }
         ],
         "responses": {
+          "204": {
+            "content": {},
+            "description": "successful operation"
+          },
           "400": {
             "content": {},
             "description": "Invalid ID supplied"
           },
+          "401": {
+            "content": {},
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {},
+            "description": "Forbidden"
+          },
           "404": {
             "content": {},
             "description": "Gig not found"
+          },
+          "405": {
+            "content": {},
+            "description": "Validation exception"
+          },
+          "406": {
+            "content": {},
+            "description": "Gig already deleted"
           }
         },
         "security": [
@@ -321,8 +387,9 @@
             "name": "gigId",
             "required": true,
             "schema": {
-              "format": "int64",
-              "type": "integer"
+              "format": "string",
+              "type": "string",
+              "maxLength": 32
             },
             "style": "simple"
           }
@@ -347,9 +414,25 @@
             "content": {},
             "description": "Invalid ID supplied"
           },
+          "401": {
+            "content": {},
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {},
+            "description": "Forbidden"
+          },
           "404": {
             "content": {},
             "description": "Gig not found"
+          },
+          "405": {
+            "content": {},
+            "description": "Validation exception"
+          },
+          "406": {
+            "content": {},
+            "description": "Gig already deleted"
           }
         },
         "security": [
@@ -372,8 +455,9 @@
             "name": "gigId",
             "required": true,
             "schema": {
-              "format": "int64",
-              "type": "integer"
+              "format": "string",
+              "type": "string",
+              "maxLength": 32
             },
             "style": "simple"
           }
@@ -382,6 +466,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
+                "$ref": "#/components/schemas/Gig",
                 "properties": {
                   "name": {
                     "description": "Updated name of the gig",
@@ -397,6 +482,14 @@
           }
         },
         "responses": {
+          "401": {
+            "content": {},
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {},
+            "description": "Forbidden"
+          },
           "405": {
             "content": {},
             "description": "Invalid input"
@@ -427,8 +520,9 @@
             "name": "gigId",
             "required": true,
             "schema": {
-              "format": "int64",
-              "type": "integer"
+              "format": "string",
+              "type": "string",
+              "maxLength": 32
             },
             "style": "simple"
           }
@@ -489,7 +583,9 @@
                 "schema": {
                   "additionalProperties": {
                     "format": "int32",
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 16384
                   },
                   "type": "object"
                 }
@@ -565,12 +661,17 @@
             "schema": {
               "format": "int64",
               "minimum": 1,
+              "maximum": 1000000000,
               "type": "integer"
             },
             "style": "simple"
           }
         ],
         "responses": {
+          "204": {
+            "content": {},
+            "description": "transaction deleted"
+          },
           "400": {
             "content": {},
             "description": "Invalid ID supplied"
@@ -654,6 +755,9 @@
           "default": {
             "content": {},
             "description": "successful operation"
+          },
+          "204": {
+            "description": "Created"
           }
         },
         "summary": "Create user",
@@ -673,7 +777,8 @@
                 "items": {
                   "$ref": "#/components/schemas/User"
                 },
-                "type": "array"
+                "type": "array",
+                "maxItems": 50
               }
             }
           },
@@ -684,6 +789,9 @@
           "default": {
             "content": {},
             "description": "successful operation"
+          },
+          "204": {
+            "description": "Created"
           }
         },
         "summary": "Creates list of users with given input array",
@@ -703,7 +811,8 @@
                 "items": {
                   "$ref": "#/components/schemas/User"
                 },
-                "type": "array"
+                "type": "array",
+                "maxItems": 50
               }
             }
           },
@@ -714,6 +823,9 @@
           "default": {
             "content": {},
             "description": "successful operation"
+          },
+          "204": {
+            "description": "Created"
           }
         },
         "summary": "Creates list of users with given input array",
@@ -734,7 +846,8 @@
             "name": "username",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 32
             },
             "style": "form"
           },
@@ -745,7 +858,8 @@
             "name": "password",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 32
             },
             "style": "form"
           }
@@ -755,12 +869,14 @@
             "content": {
               "application/xml": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 32
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 32
                 }
               }
             },
@@ -771,7 +887,9 @@
                 "explode": false,
                 "schema": {
                   "format": "int32",
-                  "type": "integer"
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1024
                 },
                 "style": "simple"
               },
@@ -780,7 +898,8 @@
                 "explode": false,
                 "schema": {
                   "format": "date-time",
-                  "type": "string"
+                  "type": "string",
+                  "maxLength": 64
                 },
                 "style": "simple"
               }
@@ -801,6 +920,9 @@
       "get": {
         "operationId": "logoutUser",
         "responses": {
+          "200": {
+            "description": "successful logout"
+          },
           "default": {
             "content": {},
             "description": "successful operation"
@@ -824,7 +946,9 @@
             "name": "username",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 15,
+              "pattern": "^[A-Za-z0-9]{3,15}$"
             },
             "style": "simple"
           }
@@ -854,7 +978,9 @@
             "name": "username",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 15,
+              "pattern": "^[A-Za-z0-9]{3,15}$"
             },
             "style": "simple"
           }
@@ -900,7 +1026,8 @@
             "name": "username",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 32
             },
             "style": "simple"
           }
@@ -934,33 +1061,46 @@
       }
     }
   },
+  "security": [
+    {
+      "gigstore_auth": [
+        "write:gigs",
+        "read:gigs"
+      ]
+    }
+  ],
   "components": {
     "schemas": {
       "transaction": {
         "example": {
-          "quantity": 1,
-          "id": 0,
-          "gigId": 6,
-          "shipDate": "2000-01-23T04:56:07.000Z",
+          "price": 1,
+          "id": "uuid",
+          "gigId": "uuid",
+          "shipDate": "2000-01-23T04:56:07.000+00:00",
           "complete": false,
           "status": "placed"
         },
         "properties": {
           "id": {
-            "format": "int64",
-            "type": "integer"
+            "format": "string",
+            "type": "string",
+            "maxLength": 60
           },
           "gigId": {
-            "format": "int64",
-            "type": "integer"
+            "format": "string",
+            "type": "string",
+            "maxLength": 32
           },
-          "quantity": {
+          "price": {
             "format": "int32",
-            "type": "integer"
+            "type": "integer",
+            "maximum": 9999999999999,
+            "minimum": 0
           },
           "shipDate": {
             "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "maxLength": 64
           },
           "status": {
             "description": "transaction Status",
@@ -977,6 +1117,7 @@
           }
         },
         "type": "object",
+        "additionalProperties": false,
         "xml": {
           "name": "transaction"
         }
@@ -989,13 +1130,16 @@
         "properties": {
           "id": {
             "format": "int64",
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           }
         },
         "type": "object",
+        "additionalProperties": false,
         "xml": {
           "name": "Category"
         }
@@ -1007,40 +1151,50 @@
           "password": "password",
           "userStatus": 6,
           "phone": "phone",
-          "id": 0,
+          "id": "0",
           "email": "email",
           "username": "username"
         },
         "properties": {
           "id": {
-            "format": "int64",
-            "type": "integer"
+            "format": "uuid",
+            "type": "string",
+            "maxLength": 60
           },
           "username": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "phone": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "userStatus": {
             "description": "User Status",
             "format": "int32",
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1024
           }
         },
         "type": "object",
+        "additionalProperties": false,
         "xml": {
           "name": "User"
         }
@@ -1052,14 +1206,19 @@
         },
         "properties": {
           "id": {
-            "format": "int64",
-            "type": "integer"
+            "format": "uuid",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 15,
+            "pattern": "^[A-Za-z0-9]{3,10}$"
           }
         },
         "type": "object",
+        "additionalProperties": false,
         "xml": {
           "name": "Tag"
         }
@@ -1075,10 +1234,10 @@
             "description",
             "description"
           ],
-          "id": 0,
+          "id": "uuid",
           "category": {
             "name": "name",
-            "id": 6
+            "id": "6"
           },
           "tags": [
             {
@@ -1094,15 +1253,17 @@
         },
         "properties": {
           "id": {
-            "format": "int64",
-            "type": "integer"
+            "format": "uuid",
+            "type": "string",
+            "maxLength": 60
           },
           "category": {
             "$ref": "#/components/schemas/Category"
           },
           "name": {
             "example": "The gig's catchy name - e.g. \"write golang webstore\"",
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "description": {
             "items": {
@@ -1112,7 +1273,8 @@
             "xml": {
               "name": "description",
               "wrapped": true
-            }
+            },
+            "maxItems": 100
           },
           "measurableoutcome": {
             "items": {
@@ -1122,7 +1284,8 @@
             "xml": {
               "name": "measurableoutcome",
               "wrapped": true
-            }
+            },
+            "maxItems": 100
           },
           "tags": {
             "items": {
@@ -1132,7 +1295,8 @@
             "xml": {
               "name": "tag",
               "wrapped": true
-            }
+            },
+            "maxItems": 100
           },
           "status": {
             "description": "gig status in the store",
@@ -1150,6 +1314,7 @@
           "name"
         ],
         "type": "object",
+        "additionalProperties": false,
         "xml": {
           "name": "Gig"
         }
@@ -1163,13 +1328,16 @@
         "properties": {
           "code": {
             "format": "int32",
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 32
           }
         },
         "type": "object"

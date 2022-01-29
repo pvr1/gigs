@@ -2,33 +2,33 @@ openapi: 3.0.1
 info:
   contact:
     email: a.a@a.com
-  description: This is the Gigs workforce api. Use to search for workforce or search
-    for a gig
+  description: >-
+    This is the Gigs workforce api. Use to search for workforce or search for a
+    gig
   license:
     name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
   termsOfService: pvr
   title: Gigs workforce api
   version: 1.0.0
 externalDocs:
   description: Find out more about Swagger
-  url: http://swagger.io
+  url: 'http://swagger.io'
 servers:
-#- url: https://127.0.0.1.nip.io:8080/v2
-- url: http://127.0.0.1.nip.io:8080/v2
+  - url: 'http://127.0.0.1.nip.io:8080/v2'
 tags:
-- description: Everything about your future Gigs
-  externalDocs:
-    description: Find out more
-    url: http://swagger.io
-  name: gigs
-- description: Access to Gigstore transactions
-  name: gigstransactions
-- description: Operations about user
-  externalDocs:
-    description: Find out more about our store
-    url: http://swagger.io
-  name: gigworker
+  - description: Everything about your future Gigs
+    externalDocs:
+      description: Find out more
+      url: 'http://swagger.io'
+    name: gigs
+  - description: Access to Gigstore transactions
+    name: gigstransactions
+  - description: Operations about user
+    externalDocs:
+      description: Find out more about our store
+      url: 'http://swagger.io'
+    name: gigworker
 paths:
   /gigs:
     post:
@@ -44,16 +44,28 @@ paths:
         description: Gig object that needs to be added to the store
         required: true
       responses:
-        "405":
+        '200':
+          content: {}
+          description: successful operation
+        '401':
+          content: {}
+          description: Unauthorized
+        '403':
+          content: {}
+          description: Forbidden
+        '405':
           content: {}
           description: Invalid input
+        '406':
+          content: {}
+          description: Already exists
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: Add a new gig to the store
       tags:
-      - gig
+        - gig
       x-codegen-request-body-name: body
     put:
       operationId: updateGig
@@ -68,157 +80,199 @@ paths:
         description: Gig object that needs to be added to the store
         required: true
       responses:
-        "400":
+        '200':
+          content: {}
+          description: successful operation
+        '400':
           content: {}
           description: Invalid ID supplied
-        "404":
+        '404':
           content: {}
           description: Gig not found
-        "405":
+        '405':
           content: {}
           description: Validation exception
+        '406':
+          content: {}
+          description: Already exists
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: Update an existing gig
       tags:
-      - gigs
+        - gigs
       x-codegen-request-body-name: body
   /gig/findByStatus:
     get:
       description: Multiple status values can be provided with comma separated strings
       operationId: findGigsByStatus
       parameters:
-      - description: Status values that need to be considered for filter
-        explode: true
-        in: query
-        name: status
-        required: true
-        schema:
-          items:
-            default: available
-            enum:
-            - available
-            - pending
-            - sold
-            type: string
-          type: array
-        style: form
+        - description: Status values that need to be considered for filter
+          explode: true
+          in: query
+          name: status
+          required: true
+          schema:
+            items:
+              default: available
+              enum:
+                - available
+                - pending
+                - sold
+              type: string
+            type: array
+            maxItems: 50
+          style: form
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
                 items:
                   $ref: '#/components/schemas/Gig'
                 type: array
+                maxItems: 100
             application/json:
               schema:
                 items:
                   $ref: '#/components/schemas/Gig'
                 type: array
+                maxItems: 100
           description: successful operation
-        "400":
+        '400':
           content: {}
           description: Invalid status value
+        '403':
+          content: {}
+          description: Forbidden
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: Finds Gigs by status
       tags:
-      - gig
+        - gig
   /gig/findByTags:
     get:
       deprecated: false
-      description: Muliple tags can be provided with comma separated strings. Use tag1,
+      description: >-
+        Muliple tags can be provided with comma separated strings. Use tag1,
         tag2, tag3 for testing.
       operationId: findGigsByTags
       parameters:
-      - description: Tags to filter by
-        explode: true
-        in: query
-        name: tags
-        required: true
-        schema:
-          items:
-            type: string
-          type: array
-        style: form
+        - description: Tags to filter by
+          explode: true
+          in: query
+          name: tags
+          required: true
+          schema:
+            $ref: '#/components/schemas/Tag'
+            items:
+              type: string
+            type: array
+            maxItems: 50
+          style: form
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
                 items:
                   $ref: '#/components/schemas/Gig'
                 type: array
+                maxItems: 100
             application/json:
               schema:
                 items:
                   $ref: '#/components/schemas/Gig'
                 type: array
+                maxItems: 100
           description: successful operation
-        "400":
+        '400':
           content: {}
           description: Invalid tag value
+        '401':
+          content: {}
+          description: Unauthorized
+        '403':
+          content: {}
+          description: Forbidden
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: Finds Gigs by tags
       tags:
-      - gig
-  /gig/{gigId}:
+        - gig
+  '/gig/{gigId}':
     delete:
       operationId: deleteGig
       parameters:
-      - explode: false
-        in: header
-        name: api_key
-        required: false
-        schema:
-          type: string
-        style: simple
-      - description: Gig id to delete
-        explode: false
-        in: path
-        name: gigId
-        required: true
-        schema:
-          format: int64
-          type: integer
-        style: simple
+        - explode: false
+          in: header
+          name: api_key
+          required: false
+          schema:
+            type: string
+            maxLength: 15
+            minLength: 1
+          style: simple
+        - description: Gig id to delete
+          explode: false
+          in: path
+          name: gigId
+          required: true
+          schema:
+            format: string
+            type: string
+            maxLength: 32
+          style: simple
       responses:
-        "400":
+        '204':
+          content: {}
+          description: successful operation
+        '400':
           content: {}
           description: Invalid ID supplied
-        "404":
+        '401':
+          content: {}
+          description: Unauthorized
+        '403':
+          content: {}
+          description: Forbidden
+        '404':
           content: {}
           description: Gig not found
+        '405':
+          content: {}
+          description: Validation exception
+        '406':
+          content: {}
+          description: Gig already deleted
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: Deletes a gig
       tags:
-      - gig
+        - gig
     get:
       description: Returns a single gig
       operationId: getGigById
       parameters:
-      - description: ID of gig to return
-        explode: false
-        in: path
-        name: gigId
-        required: true
-        schema:
-          format: int64
-          type: integer
-        style: simple
+        - description: ID of gig to return
+          explode: false
+          in: path
+          name: gigId
+          required: true
+          schema:
+            format: string
+            type: string
+            maxLength: 32
+          style: simple
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
@@ -227,33 +281,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Gig'
           description: successful operation
-        "400":
+        '400':
           content: {}
           description: Invalid ID supplied
-        "404":
+        '401':
+          content: {}
+          description: Unauthorized
+        '403':
+          content: {}
+          description: Forbidden
+        '404':
           content: {}
           description: Gig not found
+        '405':
+          content: {}
+          description: Validation exception
+        '406':
+          content: {}
+          description: Gig already deleted
       security:
-      - api_key: []
+        - api_key: []
       summary: Find gig by ID
       tags:
-      - gig
+        - gig
     post:
       operationId: updateGigWithForm
       parameters:
-      - description: ID of gig that needs to be updated
-        explode: false
-        in: path
-        name: gigId
-        required: true
-        schema:
-          format: int64
-          type: integer
-        style: simple
+        - description: ID of gig that needs to be updated
+          explode: false
+          in: path
+          name: gigId
+          required: true
+          schema:
+            format: string
+            type: string
+            maxLength: 32
+          style: simple
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
+              $ref: '#/components/schemas/Gig'
               properties:
                 name:
                   description: Updated name of the gig
@@ -262,29 +330,36 @@ paths:
                   description: Updated status of the gig
                   type: string
       responses:
-        "405":
+        '401':
+          content: {}
+          description: Unauthorized
+        '403':
+          content: {}
+          description: Forbidden
+        '405':
           content: {}
           description: Invalid input
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: Updates a gig in the store with form data
       tags:
-      - gig
-  /gig/{gigId}/uploadImage:
+        - gig
+  '/gig/{gigId}/uploadImage':
     post:
       operationId: uploadFile
       parameters:
-      - description: ID of gig to update
-        explode: false
-        in: path
-        name: gigId
-        required: true
-        schema:
-          format: int64
-          type: integer
-        style: simple
+        - description: ID of gig to update
+          explode: false
+          in: path
+          name: gigId
+          required: true
+          schema:
+            format: string
+            type: string
+            maxLength: 32
+          style: simple
       requestBody:
         content:
           multipart/form-data:
@@ -298,38 +373,40 @@ paths:
                   format: binary
                   type: string
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
           description: successful operation
       security:
-      - gigstore_auth:
-        - write:gigs
-        - read:gigs
+        - gigstore_auth:
+            - 'write:gigs'
+            - 'read:gigs'
       summary: uploads an image
       tags:
-      - gig
+        - gig
   /store/inventory:
     get:
       description: Returns a map of status codes to quantities
       operationId: getInventory
       responses:
-        "200":
+        '200':
           content:
             application/json:
               schema:
                 additionalProperties:
                   format: int32
                   type: integer
+                  minimum: 0
+                  maximum: 16384
                 type: object
           description: successful operation
       security:
-      - api_key: []
+        - api_key: []
       summary: Returns gig inventories by status
       tags:
-      - store
+        - store
   /store/transaction:
     post:
       operationId: placetransaction
@@ -341,7 +418,7 @@ paths:
         description: transaction placed for purchasing the gig
         required: true
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
@@ -350,57 +427,63 @@ paths:
               schema:
                 $ref: '#/components/schemas/transaction'
           description: successful operation
-        "400":
+        '400':
           content: {}
           description: Invalid transaction
       summary: Place an transaction for a gig
       tags:
-      - store
+        - store
       x-codegen-request-body-name: body
-  /store/transaction/{transactionId}:
+  '/store/transaction/{transactionId}':
     delete:
-      description: For valid response try integer IDs with positive integer value.         Negative
-        or non-integer values will generate API errors
+      description: >-
+        For valid response try integer IDs with positive integer value.        
+        Negative or non-integer values will generate API errors
       operationId: deletetransaction
       parameters:
-      - description: ID of the transaction that needs to be deleted
-        explode: false
-        in: path
-        name: transactionId
-        required: true
-        schema:
-          format: int64
-          minimum: 1.0
-          type: integer
-        style: simple
+        - description: ID of the transaction that needs to be deleted
+          explode: false
+          in: path
+          name: transactionId
+          required: true
+          schema:
+            format: int64
+            minimum: 1
+            maximum: 1000000000
+            type: integer
+          style: simple
       responses:
-        "400":
+        '204':
+          content: {}
+          description: transaction deleted
+        '400':
           content: {}
           description: Invalid ID supplied
-        "404":
+        '404':
           content: {}
           description: transaction not found
       summary: Delete purchase transaction by ID
       tags:
-      - store
+        - store
     get:
-      description: For valid response try integer IDs with value >= 1 and <= 10.         Other
-        values will generated exceptions
+      description: >-
+        For valid response try integer IDs with value >= 1 and <= 10.        
+        Other values will generated exceptions
       operationId: gettransactionById
       parameters:
-      - description: ID of gig that needs to be fetched
-        explode: false
-        in: path
-        name: transactionId
-        required: true
-        schema:
-          format: int64
-          maximum: 10.0
-          minimum: 1.0
-          type: integer
-        style: simple
+        - description: ID of gig that needs to be fetched
+          explode: false
+          in: path
+          name: transactionId
+          required: true
+          schema:
+            format: int64
+            maximum: 10
+            minimum: 1
+            type: integer
+          style: simple
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
@@ -409,15 +492,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/transaction'
           description: successful operation
-        "400":
+        '400':
           content: {}
           description: Invalid ID supplied
-        "404":
+        '404':
           content: {}
           description: transaction not found
       summary: Find purchase transaction by ID
       tags:
-      - store
+        - store
   /user:
     post:
       description: This can only be done by the logged in user.
@@ -430,12 +513,14 @@ paths:
         description: Created user object
         required: true
       responses:
+        '204':
+          description: Created
         default:
           content: {}
           description: successful operation
       summary: Create user
       tags:
-      - user
+        - user
       x-codegen-request-body-name: body
   /user/createWithArray:
     post:
@@ -447,15 +532,18 @@ paths:
               items:
                 $ref: '#/components/schemas/User'
               type: array
+              maxItems: 50
         description: List of user object
         required: true
       responses:
+        '204':
+          description: Created
         default:
           content: {}
           description: successful operation
       summary: Creates list of users with given input array
       tags:
-      - user
+        - user
       x-codegen-request-body-name: body
   /user/createWithList:
     post:
@@ -467,45 +555,52 @@ paths:
               items:
                 $ref: '#/components/schemas/User'
               type: array
+              maxItems: 50
         description: List of user object
         required: true
       responses:
+        '204':
+          description: Created
         default:
           content: {}
           description: successful operation
       summary: Creates list of users with given input array
       tags:
-      - user
+        - user
       x-codegen-request-body-name: body
   /user/login:
     get:
       operationId: loginUser
       parameters:
-      - description: The user name for login
-        explode: true
-        in: query
-        name: username
-        required: true
-        schema:
-          type: string
-        style: form
-      - description: The password for login in clear text
-        explode: true
-        in: query
-        name: password
-        required: true
-        schema:
-          type: string
-        style: form
+        - description: The user name for login
+          explode: true
+          in: query
+          name: username
+          required: true
+          schema:
+            type: string
+            maxLength: 32
+          style: form
+        - description: The password for login in clear text
+          explode: true
+          in: query
+          name: password
+          required: true
+          schema:
+            type: string
+            maxLength: 32
+          style: form
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
                 type: string
+                maxLength: 32
             application/json:
               schema:
                 type: string
+                maxLength: 32
           description: successful operation
           headers:
             X-Rate-Limit:
@@ -514,6 +609,8 @@ paths:
               schema:
                 format: int32
                 type: integer
+                minimum: 0
+                maximum: 1024
               style: simple
             X-Expires-After:
               description: date in UTC when token expires
@@ -521,59 +618,66 @@ paths:
               schema:
                 format: date-time
                 type: string
+                maxLength: 64
               style: simple
-        "400":
+        '400':
           content: {}
           description: Invalid username/password supplied
       summary: Logs user into the system
       tags:
-      - user
+        - user
   /user/logout:
     get:
       operationId: logoutUser
       responses:
+        '200':
+          description: successful logout
         default:
           content: {}
           description: successful operation
       summary: Logs out current logged in user session
       tags:
-      - user
-  /user/{username}:
+        - user
+  '/user/{username}':
     delete:
       description: This can only be done by the logged in user.
       operationId: deleteUser
       parameters:
-      - description: The name that needs to be deleted
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          type: string
-        style: simple
+        - description: The name that needs to be deleted
+          explode: false
+          in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            maxLength: 15
+            pattern: '^[A-Za-z0-9]{3,15}$'
+          style: simple
       responses:
-        "400":
+        '400':
           content: {}
           description: Invalid username supplied
-        "404":
+        '404':
           content: {}
           description: User not found
       summary: Delete user
       tags:
-      - user
+        - user
     get:
       operationId: getUserByName
       parameters:
-      - description: 'The name that needs to be fetched. Use user1 for testing. '
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          type: string
-        style: simple
+        - description: 'The name that needs to be fetched. Use user1 for testing. '
+          explode: false
+          in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            maxLength: 15
+            pattern: '^[A-Za-z0-9]{3,15}$'
+          style: simple
       responses:
-        "200":
+        '200':
           content:
             application/xml:
               schema:
@@ -582,27 +686,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: successful operation
-        "400":
+        '400':
           content: {}
           description: Invalid username supplied
-        "404":
+        '404':
           content: {}
           description: User not found
       summary: Get user by user name
       tags:
-      - user
+        - user
     put:
       description: This can only be done by the logged in user.
       operationId: updateUser
       parameters:
-      - description: name that need to be updated
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          type: string
-        style: simple
+        - description: name that need to be updated
+          explode: false
+          in: path
+          name: username
+          required: true
+          schema:
+            type: string
+            maxLength: 32
+          style: simple
       requestBody:
         content:
           '*/*':
@@ -611,16 +716,20 @@ paths:
         description: Updated user object
         required: true
       responses:
-        "400":
+        '400':
           content: {}
           description: Invalid user supplied
-        "404":
+        '404':
           content: {}
           description: User not found
       summary: Updated user
       tags:
-      - user
+        - user
       x-codegen-request-body-name: body
+security:
+  - gigstore_auth:
+      - 'write:gigs'
+      - 'read:gigs'
 components:
   schemas:
     transaction:
@@ -628,33 +737,39 @@ components:
         price: 1
         id: uuid
         gigId: uuid
-        shipDate: 2000-01-23T04:56:07.000+00:00
+        shipDate: '2000-01-23T04:56:07.000+00:00'
         complete: false
         status: placed
       properties:
         id:
           format: string
           type: string
+          maxLength: 60
         gigId:
           format: string
           type: string
+          maxLength: 32
         price:
           format: int32
           type: integer
+          maximum: 9999999999999
+          minimum: 0
         shipDate:
           format: date-time
           type: string
+          maxLength: 64
         status:
           description: transaction Status
           enum:
-          - placed
-          - approved
-          - delivered
+            - placed
+            - approved
+            - delivered
           type: string
         complete:
           default: false
           type: boolean
       type: object
+      additionalProperties: false
       xml:
         name: transaction
     Category:
@@ -665,9 +780,12 @@ components:
         id:
           format: int64
           type: integer
+          minimum: 0
         name:
           type: string
+          maxLength: 32
       type: object
+      additionalProperties: false
       xml:
         name: Category
     User:
@@ -677,30 +795,40 @@ components:
         password: password
         userStatus: 6
         phone: phone
-        id: "0"
+        id: '0'
         email: email
         username: username
       properties:
         id:
           format: uuid
           type: string
+          maxLength: 60
         username:
           type: string
+          maxLength: 32
         firstName:
           type: string
+          maxLength: 32
         lastName:
           type: string
+          maxLength: 32
         email:
           type: string
+          maxLength: 32
         password:
           type: string
+          maxLength: 32
         phone:
           type: string
+          maxLength: 32
         userStatus:
           description: User Status
           format: int32
           type: integer
+          minimum: 0
+          maximum: 1024
       type: object
+      additionalProperties: false
       xml:
         name: User
     Tag:
@@ -711,39 +839,46 @@ components:
         id:
           format: uuid
           type: string
+          minLength: 1
+          maxLength: 60
         name:
           type: string
+          maxLength: 15
+          pattern: '^[A-Za-z0-9]{3,10}$'
       type: object
+      additionalProperties: false
       xml:
         name: Tag
     Gig:
       example:
         name: The gig's catchy name - e.g. "write golang webstore"
         measurableoutcome:
-        - measurableoutcome
-        - measurableoutcome
+          - measurableoutcome
+          - measurableoutcome
         description:
-        - description
-        - description
+          - description
+          - description
         id: uuid
         category:
           name: name
-          id: "6"
+          id: '6'
         tags:
-        - name: name
-          id: 1
-        - name: name
-          id: 1
+          - name: name
+            id: 1
+          - name: name
+            id: 1
         status: available
       properties:
         id:
           format: uuid
           type: string
+          maxLength: 60
         category:
           $ref: '#/components/schemas/Category'
         name:
           example: The gig's catchy name - e.g. "write golang webstore"
           type: string
+          maxLength: 32
         description:
           items:
             type: string
@@ -751,6 +886,7 @@ components:
           xml:
             name: description
             wrapped: true
+          maxItems: 100
         measurableoutcome:
           items:
             type: string
@@ -758,6 +894,7 @@ components:
           xml:
             name: measurableoutcome
             wrapped: true
+          maxItems: 100
         tags:
           items:
             $ref: '#/components/schemas/Tag'
@@ -765,18 +902,20 @@ components:
           xml:
             name: tag
             wrapped: true
+          maxItems: 100
         status:
           description: gig status in the store
           enum:
-          - available
-          - pending
-          - sold
+            - available
+            - pending
+            - sold
           type: string
       required:
-      - description
-      - measurableoutcome
-      - name
+        - description
+        - measurableoutcome
+        - name
       type: object
+      additionalProperties: false
       xml:
         name: Gig
     ApiResponse:
@@ -788,19 +927,22 @@ components:
         code:
           format: int32
           type: integer
+          minimum: 0
         type:
           type: string
+          maxLength: 32
         message:
           type: string
+          maxLength: 32
       type: object
   securitySchemes:
     gigstore_auth:
       flows:
         implicit:
-          authorizationUrl: http://gigstore.swagger.io/oauth/dialog
+          authorizationUrl: 'http://gigstore.swagger.io/oauth/dialog'
           scopes:
-            write:gigs: modify gigs in your account
-            read:gigs: read your gigs
+            'write:gigs': modify gigs in your account
+            'read:gigs': read your gigs
       type: oauth2
     api_key:
       in: header
