@@ -22,6 +22,6 @@ var gigs = []Gig{
 	{Id: "1", Name: "Gig 1", Description: []string{"description 1"}, Measurableoutcome: []string{"measurableoutcome 1"}, Status: "available"},
 	{Id: "2", Name: "Gig 2", Description: []string{"description 2"}, Measurableoutcome: []string{"measurableoutcome 2"}, Status: "available"},
 	{Id: "3", Name: "Gig 3", Description: []string{"description 3"}, Measurableoutcome: []string{"measurableoutcome 3"}, Status: "available"},
-	{Id: "4", Name: "Gig 3", Description: []string{"description 3"}, Measurableoutcome: []string{"measurableoutcome 3"}, Status: "sold"},
-	{Id: "5", Name: "Gig 3", Description: []string{"description 3"}, Measurableoutcome: []string{"measurableoutcome 3"}, Status: "pending"},
+	{Id: "4", Name: "Gig 4", Description: []string{"description 4"}, Measurableoutcome: []string{"measurableoutcome 4"}, Status: "sold"},
+	{Id: "5", Name: "Gig 5", Description: []string{"description 5"}, Measurableoutcome: []string{"measurableoutcome 5"}, Status: "pending"},
 }
