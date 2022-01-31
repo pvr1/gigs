@@ -9,6 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFindGigsByStatus(t *testing.T) {
+	body := bytes.NewBufferString("{\"Status\":\"available\"}")
+	router := openapi.NewTestRouter()
+	w := performRequest(router, "GET", "/v2/gig/findByStatus?status=available", body)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	a := w.Body.String()
+	assert.Equal(t, "[{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Gig 1\",\"Description\":[\"description 1\"],\"Measurableoutcome\":[\"measurableoutcome 1\"],\"Tags\":null,\"Status\":\"available\"},{\"Id\":\"2\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Gig 2\",\"Description\":[\"description 2\"],\"Measurableoutcome\":[\"measurableoutcome 2\"],\"Tags\":null,\"Status\":\"available\"},{\"Id\":\"3\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Gig 3\",\"Description\":[\"description 3\"],\"Measurableoutcome\":[\"measurableoutcome 3\"],\"Tags\":null,\"Status\":\"available\"}]", a)
+}
 func TestAddRemoveGig(t *testing.T) {
 	/*
 		{\"Id\":\"1\",\"Category\":{\"Id\":0,\"Name\":\"\"},\"Name\":\"Hepp\",\"Description\":[\"descr\"],\"Measurableoutcome\":[\"hahaha\"],\"Tags\":null,\"Status\":\"available\"}"

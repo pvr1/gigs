@@ -74,7 +74,7 @@ func DeleteGig(c *gin.Context) {
 // FindGigsByStatus - Finds Gigs by status
 func FindGigsByStatus(c *gin.Context) {
 	status, err := c.GetQuery("status")
-	if err {
+	if !err {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
