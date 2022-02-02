@@ -12,7 +12,9 @@ RUN go build -a -installsuffix cgo -o gigs .
 
 FROM scratch AS runtime
 ENV GIN_MODE=release
+COPY .env .
 COPY ./api/openapi.yaml ./api/openapi.yaml
+COPY ./api/openapi.json ./api/openapi.json
 COPY --from=build /go/src/gigs .
 EXPOSE 8080/tcp
 ENTRYPOINT ["./gigs"]

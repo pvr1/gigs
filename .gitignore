@@ -6,3 +6,4 @@ logs.txt
 .openapi-generator-ignore
 .env
 target/
+.DS_Store
