@@ -11,12 +11,21 @@ require (
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.0 // indirect
+	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
+	github.com/xdg-go/scram v1.0.2 // indirect
+	github.com/xdg-go/stringprep v1.0.2 // indirect
+	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
+	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
@@ -40,8 +49,8 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday v1.6.0
-	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/ugorji/go/codec v1.2.6 // indirect
+	go.mongodb.org/mongo-driver v1.8.3
 	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect

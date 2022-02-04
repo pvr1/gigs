@@ -1,5 +1,16 @@
 package openapi
 
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
 // User - A user struct used to store the user information
 type User struct {
 	Id string `bson:"id,omitempty"`
@@ -21,6 +32,33 @@ type User struct {
 
 	// User Role - e.g. gigworker, employer etc
 	Role []Role `bson:"role,omitempty"`
+}
+
+func init() {
+	credential := options.Credential{
+		Username: "gigbe",
+		Password: "gigbe",
+	}
+	clientOpts := options.Client().ApplyURI("mongodb://mymongodb.mongodb.svc.cluster.local:27017").
+		SetAuth(credential)
+	client, err := mongo.Connect(context.TODO(), clientOpts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("gigs")
+	gigsCollection := quickstartDatabase.Collection("users")
+
+	cursor, err := gigsCollection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err = cursor.All(ctx, &users); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(users)
 }
 
 var users = []User{

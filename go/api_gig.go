@@ -1,17 +1,47 @@
 package openapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"github.com/twinj/uuid"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+// connectMongoDB - connect to MongoDB
+func connectMongoDB() (*mongo.Client, context.Context) {
+	credential := options.Credential{
+		Username: "gigbe",
+		Password: "gigbe",
+	}
+	clientOpts := options.Client().ApplyURI("mongodb://10.0.0.167:27017").
+		SetAuth(credential)
+	client, err := mongo.Connect(context.TODO(), clientOpts)
+	if err != nil {
+		println("Connect error")
+		log.Fatal(err)
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	return client, ctx
+}
+
+// getCollectionMongoDB - Get a collection from MongoDB
+func getCollectionMongoDB(client *mongo.Client, collection string) *mongo.Collection {
+	quickstartDatabase := client.Database("gigs")
+	gigsCollection := quickstartDatabase.Collection(collection)
+	return gigsCollection
+}
 
 // AddGig - Add a new gig to the store
 func AddGig(c *gin.Context) {
@@ -32,6 +62,19 @@ func AddGig(c *gin.Context) {
 
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
+
+	//Insert record into mongodb
+	client, ctx := connectMongoDB()
+	defer client.Disconnect(ctx)
+	gigsCollection := getCollectionMongoDB(client, "gigs")
+	gigsE, err := gigsCollection.InsertMany(ctx, []interface{}{
+		&mygig,
+	})
+	if err != nil {
+		println("add record error")
+		log.Fatal(gigsE, err)
+	}
+
 	c.JSON(http.StatusCreated, mygig)
 }
 
@@ -64,10 +107,24 @@ func DeleteGig(c *gin.Context) {
 	for i, a := range gigs {
 		if a.Id == html {
 			gigs = RemoveGig(gigs, i)
+
+			//Delete record in mongodb
+			client, ctx := connectMongoDB()
+			defer client.Disconnect(ctx)
+			gigsCollection := getCollectionMongoDB(client, "gigs")
+			gigsE, err := gigsCollection.DeleteOne(ctx,
+				bson.M{"id": html},
+			)
+			if err != nil {
+				println("add record error")
+				log.Fatal(gigsE, err)
+			}
+
 			c.JSON(http.StatusOK, a)
 			return
 		}
 	}
+
 	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 

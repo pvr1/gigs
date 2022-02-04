@@ -1,5 +1,16 @@
 package openapi
 
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
 // Gig - A gig struct
 type Gig struct {
 	Id string `bson:"id,omitempty"`
@@ -18,10 +29,31 @@ type Gig struct {
 	Status string `bson:"status,omitempty"`
 }
 
-var gigs = []Gig{
-	{Id: "1", Name: "Gig 1", Description: []string{"description 1"}, Measurableoutcome: []string{"measurableoutcome 1"}, Status: "available"},
-	{Id: "2", Name: "Gig 2", Description: []string{"description 2"}, Measurableoutcome: []string{"measurableoutcome 2"}, Status: "available"},
-	{Id: "3", Name: "Gig 3", Description: []string{"description 3"}, Measurableoutcome: []string{"measurableoutcome 3"}, Status: "available"},
-	{Id: "4", Name: "Gig 4", Description: []string{"description 4"}, Measurableoutcome: []string{"measurableoutcome 4"}, Status: "sold"},
-	{Id: "5", Name: "Gig 5", Description: []string{"description 5"}, Measurableoutcome: []string{"measurableoutcome 5"}, Status: "pending"},
+func init() {
+	credential := options.Credential{
+		Username: "gigbe",
+		Password: "gigbe",
+	}
+	clientOpts := options.Client().ApplyURI("mongodb://mymongodb.mongodb.svc.cluster.local:27017").
+		SetAuth(credential)
+	client, err := mongo.Connect(context.TODO(), clientOpts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	defer client.Disconnect(ctx)
+
+	quickstartDatabase := client.Database("gigs")
+	gigsCollection := quickstartDatabase.Collection("gigs")
+
+	cursor, err := gigsCollection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err = cursor.All(ctx, &gigs); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(gigs)
 }
+
+var gigs = []Gig{}

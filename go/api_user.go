@@ -2,37 +2,52 @@ package openapi
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"github.com/twinj/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 //TODO: Add OIDC support
 
 // CreateUser - Create user
 func CreateUser(c *gin.Context) {
-	var tmpUser User
+	var myUser User
 
 	// Call BindJSON to bind the received JSON to
 	// newgig.
-	if err := c.BindJSON(&tmpUser); err != nil {
+	if err := c.BindJSON(&myUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
 		return
 	}
-	tmpUser.Id = uuid.NewV4().String()
+	myUser.Id = uuid.NewV4().String()
 
 	//Validate the user
-	if tmpUser.Username == "" || tmpUser.Password == "" || tmpUser.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": tmpUser.Username + " " + tmpUser.Password + " " + tmpUser.Email})
+	if myUser.Username == "" || myUser.Password == "" || myUser.Email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": myUser.Username + " " + myUser.Password + " " + myUser.Email})
 		return
 	}
 
 	// Add the new user to the slice.
-	users = append(users, tmpUser)
-	c.JSON(http.StatusCreated, tmpUser)
+	users = append(users, myUser)
+
+	//Insert record into mongodb
+	client, ctx := connectMongoDB()
+	defer client.Disconnect(ctx)
+	usersCollection := getCollectionMongoDB(client, "users")
+	userE, err := usersCollection.InsertMany(ctx, []interface{}{
+		&myUser,
+	})
+	if err != nil {
+		println("add record error")
+		log.Fatal(userE, err)
+	}
+
+	c.JSON(http.StatusCreated, myUser)
 }
 
 // CreateUsersWithArrayInput - Creates list of users with given input array
@@ -62,6 +77,19 @@ func DeleteUser(c *gin.Context) {
 	for i, a := range users {
 		if a.Username == html {
 			users = RemoveUser(users, i)
+
+			//Delete record in mongodb
+			client, ctx := connectMongoDB()
+			defer client.Disconnect(ctx)
+			usersCollection := getCollectionMongoDB(client, "users")
+			usersE, err := usersCollection.DeleteOne(ctx,
+				bson.M{"id": html},
+			)
+			if err != nil {
+				println("add record error")
+				log.Fatal(usersE, err)
+			}
+
 			c.JSON(http.StatusOK, a)
 			return
 		}

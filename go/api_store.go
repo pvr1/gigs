@@ -27,6 +27,7 @@ func postHandler(c *gin.Context) {
 */
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -34,6 +35,7 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"github.com/twinj/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // RemoveTransaction - Helper function to remove a transaction from the slice
@@ -52,6 +54,19 @@ func DeleteTransaction(c *gin.Context) {
 	for i, a := range transactions {
 		if a.Id == html {
 			transactions = RemoveTransaction(transactions, i)
+
+			//Delete record in mongodb
+			client, ctx := connectMongoDB()
+			defer client.Disconnect(ctx)
+			tranactionsCollection := getCollectionMongoDB(client, "transactions")
+			transE, err := tranactionsCollection.DeleteOne(ctx,
+				bson.M{"id": html},
+			)
+			if err != nil {
+				println("add record error")
+				log.Fatal(transE, err)
+			}
+
 			c.JSON(http.StatusOK, a)
 			return
 		}
@@ -121,5 +136,18 @@ func PlaceTransaction(c *gin.Context) {
 
 	// Add the new gig to the slice.
 	transactions = append(transactions, mypurchase)
+
+	//Insert record into mongodb
+	client, ctx := connectMongoDB()
+	defer client.Disconnect(ctx)
+	transCollection := getCollectionMongoDB(client, "transactions")
+	transE, err := transCollection.InsertMany(ctx, []interface{}{
+		&mypurchase,
+	})
+	if err != nil {
+		println("add record error")
+		log.Fatal(transE, err)
+	}
+
 	c.JSON(http.StatusCreated, mypurchase)
 }
