@@ -30,4 +30,10 @@ helm install my-release -n mongodb bitnami/mongodb
 kubectl apply -f k8s_gigs.yaml
 ```
 
-
+```bash
+kubectl get svc -n mongodb # look for or make LoadBalancer svc for mongodb
+export MONGODB_ROOT_PASSWORD=$(kubectl get secret --namespace mongodb my-release-mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 --decode)
+mongosh admin --host 10.0.0.166 --authenticationDatabase admin -u root -p $MONGODB_ROOT_PASSWORD
+use gigs
+db.createUser({user: "gigbe",pwd:  "gigbe", roles: [ { role: "readWrite", db: "gigs" }]})
+```
