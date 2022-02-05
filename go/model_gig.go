@@ -27,6 +27,8 @@ type Gig struct {
 
 	// gig status in the store
 	Status string `bson:"status,omitempty"`
+
+	userId string `bson:"user"`
 }
 
 func init() {

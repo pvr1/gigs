@@ -749,6 +749,10 @@ components:
           format: string
           type: string
           maxLength: 32
+        buyerId:
+          format: string
+          type: string
+          maxLength: 32
         price:
           format: int32
           type: integer
@@ -868,6 +872,9 @@ components:
           - name: name
             id: 1
         status: available
+        userid: 
+          type: string
+          maxLength: 32
       properties:
         id:
           format: uuid

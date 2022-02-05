@@ -143,10 +143,13 @@ func FindGigsByStatus(c *gin.Context) {
 	// an gig whose ID value matches the parameter.
 
 	tmp := []Gig{}
+	tmp2 := Gig{}
 
 	for _, a := range gigs {
 		if a.Status == html {
-			tmp = append(tmp, a)
+			tmp2 = a
+			tmp2.userId = "#user#"
+			tmp = append(tmp, tmp2)
 		}
 	}
 
@@ -162,10 +165,13 @@ func GetGigById(c *gin.Context) {
 
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
+	tmp2 := Gig{}
 
 	for _, a := range gigs {
 		if a.Id == html {
-			c.JSON(http.StatusOK, a)
+			tmp2 = a
+			tmp2.userId = "#user#"
+			c.JSON(http.StatusOK, tmp2)
 			return
 		}
 	}
@@ -217,6 +223,7 @@ func UpdateGigWithForm(c *gin.Context) {
 // UploadFile - uploads an image
 func UploadFile(c *gin.Context) {
 	// Single file
+	id := c.Param("gigId")
 	file, err := c.FormFile("file")
 	log.Println("file: ", file)
 	if err != nil {
@@ -229,6 +236,19 @@ func UploadFile(c *gin.Context) {
 	extension := filepath.Ext(file.Filename)
 	// Generate random file name for the new uploaded file so it doesn't override the old file with same name
 	newFileName := uuid.NewV4().String() + extension
+
+	//Insert record into mongodb
+	client, ctx := connectMongoDB()
+	defer client.Disconnect(ctx)
+	gigsCollection := getCollectionMongoDB(client, "gigsfiles")
+	gigsE, err := gigsCollection.InsertMany(ctx, []interface{}{
+		&id,
+		&newFileName,
+	})
+	if err != nil {
+		println("add record error")
+		log.Fatal(gigsE, err)
+	}
 
 	// The file is received, so let's save it
 	if err := c.SaveUploadedFile(file, "/tmp/"+newFileName); err != nil {

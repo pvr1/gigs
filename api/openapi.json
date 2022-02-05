@@ -1091,6 +1091,11 @@
             "type": "string",
             "maxLength": 32
           },
+          "BuyerId": {
+            "format": "string",
+            "type": "string",
+            "maxLength": 32
+          },
           "price": {
             "format": "int32",
             "type": "integer",
@@ -1249,7 +1254,11 @@
               "id": 1
             }
           ],
-          "status": "available"
+          "status": "available",
+          "userid": {
+            "type": "string",
+            "maxLength": 32
+          }
         },
         "properties": {
           "id": {
