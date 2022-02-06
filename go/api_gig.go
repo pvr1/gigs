@@ -96,22 +96,16 @@ func AddGig(c *gin.Context) {
 	mygig.UserId = myUser.Id
 
 	//Sanitize the Tags
-	for _, aTag := range gigs {
-		for i, bTag := range aTag.Tags {
-			mygig.Tags[i].Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(bTag.Name))))
-		}
+	for i, aTag := range mygig.Tags {
+		mygig.Tags[i].Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aTag.Name))))
 	}
 
 	//Sanitize the Category
-	for _, aCategory := range gigs {
-		mygig.Category.Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aCategory.Name))))
-	}
+	mygig.Category.Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(mygig.Category.Name))))
 
 	//Sanitize the Description
-	for _, aDesc := range gigs {
-		for i, bDesc := range aDesc.Description {
-			mygig.Description[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(bDesc))))
-		}
+	for i, aDesc := range mygig.Description {
+		mygig.Description[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aDesc))))
 	}
 
 	// Add the new gig to the slice.
