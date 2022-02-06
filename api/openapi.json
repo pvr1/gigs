@@ -509,9 +509,9 @@
         ]
       }
     },
-    "/gig/{gigId}/uploadImage": {
+    "/gig/{gigId}/upload": {
       "post": {
-        "operationId": "uploadFile",
+        "operationId": "upload",
         "parameters": [
           {
             "description": "ID of gig to update",
@@ -566,7 +566,7 @@
             ]
           }
         ],
-        "summary": "uploads an image",
+        "summary": "uploads a file",
         "tags": [
           "gig"
         ]

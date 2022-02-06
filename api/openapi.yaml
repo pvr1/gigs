@@ -346,9 +346,9 @@ paths:
       summary: Updates a gig in the store with form data
       tags:
         - gig
-  '/gig/{gigId}/uploadImage':
+  '/gig/{gigId}/upload':
     post:
-      operationId: uploadFile
+      operationId: upload
       parameters:
         - description: ID of gig to update
           explode: false
@@ -383,7 +383,7 @@ paths:
         - gigstore_auth:
             - 'write:gigs'
             - 'read:gigs'
-      summary: uploads an image
+      summary: uploads a file
       tags:
         - gig
   /store/inventory:

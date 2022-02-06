@@ -266,14 +266,14 @@ var routes = Routes{
 	{
 		"UploadFile",
 		http.MethodPost,
-		"/v2/gig/:gigId/uploadImage",
+		"/v2/gig/upload/:gigId",
 		UploadFile,
 	},
 
 	{
 		"DownloadFile",
 		http.MethodGet,
-		"/v2/gig/:gigId/DownloadFile",
+		"/v2/gig/download/:gigId",
 		DownloadFile,
 	},
 
