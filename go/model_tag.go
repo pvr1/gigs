@@ -5,10 +5,3 @@ type Tag struct {
 	Id   int64  `bson:"id,omitempty"`
 	Name string `bson:"name,omitempty"`
 }
-
-// Some possible values for the meta tag
-var tags = []Tag{
-	{Id: 1, Name: "tag"},
-	{Id: 2, Name: "1"},
-	{Id: 3, Name: "2"},
-}

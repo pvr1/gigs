@@ -38,7 +38,10 @@ func connectMongoDB() (*mongo.Client, context.Context) {
 		log.Fatal(err)
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, errCtxTime := context.WithTimeout(context.Background(), 10*time.Second)
+	if errCtxTime != nil {
+		println("Context error")
+	}
 	return client, ctx
 }
 
@@ -297,6 +300,7 @@ func UploadFile(c *gin.Context) {
 	//Insert record into mongodb
 	client, ctx := connectMongoDB()
 	defer client.Disconnect(ctx)
+
 	gigsCollection := getCollectionMongoDB(client, "gigsfiles")
 	gigsE, err := gigsCollection.InsertMany(ctx, []interface{}{
 		bson.D{
@@ -401,7 +405,10 @@ func DownloadFile(c *gin.Context) {
 }
 
 func addFileToZip(zipWriter *zip.Writer, resultFile string, fsFiles *mongo.Collection, db *mongo.Database) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, errCtxTime := context.WithTimeout(context.Background(), 10*time.Second)
+	if errCtxTime != nil {
+		fmt.Println("Error creating context: ", errCtxTime)
+	}
 	var results bson.M
 	err := fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
 	if err != nil {

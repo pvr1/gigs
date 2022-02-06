@@ -6,17 +6,17 @@ import (
 )
 
 func _TestRemoveTransaction(t *testing.T) {
-	type args struct {
+	type arguments struct {
 		s     []transaction
 		index int
 	}
 	tests := []struct {
 		name string
-		args args
+		args arguments
 		want []transaction
 	}{
 		{name: "Test remove transaction",
-			args: args{
+			args: arguments{
 				s: []transaction{
 					{
 						Id: "1",
