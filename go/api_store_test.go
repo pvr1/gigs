@@ -1,5 +1,6 @@
 package openapi
 
+/*
 import (
 	"reflect"
 	"testing"
@@ -32,3 +33,4 @@ func _TestRemoveTransaction(t *testing.T) {
 		})
 	}
 }
+*/
