@@ -243,6 +243,13 @@ var routes = Routes{
 	},
 
 	{
+		"FindGigsByUser",
+		http.MethodGet,
+		"/v2/gig/findByUser",
+		FindGigsByUser,
+	},
+
+	{
 		"GetGigById",
 		http.MethodGet,
 		"/v2/gig/:gigId",
@@ -261,6 +268,13 @@ var routes = Routes{
 		http.MethodPost,
 		"/v2/gig/:gigId/uploadImage",
 		UploadFile,
+	},
+
+	{
+		"DownloadFile",
+		http.MethodGet,
+		"/v2/gig/:gigId/DownloadFile",
+		DownloadFile,
 	},
 
 	{

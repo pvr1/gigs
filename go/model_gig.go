@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 
 // Gig - A gig struct
 type Gig struct {
-	Id string `bson:"id,omitempty"`
+	Id string `bson:"id"`
 
 	Category Category `bson:"category,omitempty"`
 
@@ -28,7 +27,12 @@ type Gig struct {
 	// gig status in the store
 	Status string `bson:"status,omitempty"`
 
-	userId string `bson:"user"`
+	UserId string `bson:"userid"`
+}
+
+type Gigfile struct {
+	Id       string `bson:"id"`
+	Filename string `bson:"filename"`
 }
 
 func init() {
@@ -55,7 +59,8 @@ func init() {
 	if err = cursor.All(ctx, &gigs); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(gigs)
+	//fmt.Println(gigs)
 }
 
 var gigs = []Gig{}
+var gigsfiles = []Gigfile{}

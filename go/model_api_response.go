@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -44,7 +43,7 @@ func init() {
 	if err = cursor.All(ctx, &apiresponse); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(apiresponse)
+	//fmt.Println(apiresponse)
 }
 
 var apiresponse = []ApiResponse{}

@@ -2,6 +2,7 @@ package openapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -120,8 +121,27 @@ var myUser User
 
 // LoginUser - Logs user into the system
 func LoginUser(c *gin.Context) {
-	myUser.Id = "#user#"
-	c.JSON(http.StatusOK, gin.H{})
+	id, err := c.GetQuery("user")
+	if !err {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
+
+	for _, a := range users {
+		if a.Username == html {
+			myUser = a
+			c.JSON(http.StatusOK, a)
+			return
+		}
+	}
+	fmt.Println("User not found: ", id, unsafe, html)
+	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 }
 
 // LogoutUser - Logs out current logged in user session

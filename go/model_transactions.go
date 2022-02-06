@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -53,7 +52,7 @@ func init() {
 	if err = cursor.All(ctx, &transactions); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(transactions)
+	//fmt.Println(transactions)
 }
 
 var ddate, _ = time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")

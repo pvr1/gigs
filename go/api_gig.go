@@ -1,11 +1,14 @@
 package openapi
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -15,6 +18,7 @@ import (
 	"github.com/twinj/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -24,7 +28,7 @@ func connectMongoDB() (*mongo.Client, context.Context) {
 		Username: "gigbe",
 		Password: "gigbe",
 	}
-	clientOpts := options.Client().ApplyURI("mongodb://10.0.0.167:27017").
+	clientOpts := options.Client().ApplyURI("mongodb://mymongodb.mongodb.svc.cluster.local:27017").
 		SetAuth(credential)
 	client, err := mongo.Connect(context.TODO(), clientOpts)
 	if err != nil {
@@ -34,6 +38,24 @@ func connectMongoDB() (*mongo.Client, context.Context) {
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	return client, ctx
+}
+
+func InitiateMongoClient() *mongo.Client {
+	var err error
+	var client *mongo.Client
+	credential := options.Credential{
+		Username: "gigbe",
+		Password: "gigbe",
+	}
+	uri := "mongodb://mymongodb.mongodb.svc.cluster.local:27017"
+	opts := options.Client()
+	opts.ApplyURI(uri).SetAuth(credential)
+	//TODO: adjust maxpoolsize
+	opts.SetMaxPoolSize(5)
+	if client, err = mongo.Connect(context.Background(), opts); err != nil {
+		fmt.Println(err.Error())
+	}
+	return client
 }
 
 // getCollectionMongoDB - Get a collection from MongoDB
@@ -61,7 +83,11 @@ func AddGig(c *gin.Context) {
 	}
 
 	//TODO: Validate the user so it is a logged in user
-	mygig.userId = myUser.Id
+	if mygig.UserId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required user id - please login"})
+		return
+	}
+	mygig.UserId = myUser.Id
 
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
@@ -151,8 +177,34 @@ func FindGigsByStatus(c *gin.Context) {
 	for _, a := range gigs {
 		if a.Status == html {
 			tmp2 = a
-			tmp2.userId = myUser.Id
+			tmp2.UserId = "obfuscated"
 			tmp = append(tmp, tmp2)
+		}
+	}
+
+	c.JSON(http.StatusOK, tmp)
+}
+
+// FindGigsByStatus - Finds Gigs by status
+func FindGigsByUser(c *gin.Context) {
+	status, err := c.GetQuery("userid")
+	if !err {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	unsafe := blackfriday.SanitizedAnchorName(status)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
+
+	tmp := []Gig{}
+	fmt.Println("userid: ", html)
+
+	for _, a := range gigs {
+		if a.UserId == html {
+			tmp = append(tmp, a)
 		}
 	}
 
@@ -173,7 +225,7 @@ func GetGigById(c *gin.Context) {
 	for _, a := range gigs {
 		if a.Id == html {
 			tmp2 = a
-			tmp2.userId = myUser.Id
+			tmp2.UserId = myUser.Id
 			c.JSON(http.StatusOK, tmp2)
 			return
 		}
@@ -228,7 +280,7 @@ func UploadFile(c *gin.Context) {
 	// Single file
 	id := c.Param("gigId")
 	file, err := c.FormFile("file")
-	log.Println("file: ", file)
+	//log.Println("file: ", file)
 	if err != nil {
 		log.Println("Error uploading file - ", err)
 		c.String(http.StatusBadRequest, fmt.Sprintf("Error uploading: %s", err.Error()))
@@ -245,20 +297,107 @@ func UploadFile(c *gin.Context) {
 	defer client.Disconnect(ctx)
 	gigsCollection := getCollectionMongoDB(client, "gigsfiles")
 	gigsE, err := gigsCollection.InsertMany(ctx, []interface{}{
-		&id,
-		&newFileName,
-	})
+		bson.D{
+			{"id", &id},
+			{"filename", &newFileName},
+		},
+	},
+	)
 	if err != nil {
 		println("add record error")
-		log.Fatal(gigsE, err)
+		fmt.Println(gigsE, err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		return
 	}
 
 	// The file is received, so let's save it
-	if err := c.SaveUploadedFile(file, "/tmp/"+newFileName); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"message": "Unable to save the file",
-		})
+	conn := InitiateMongoClient()
+	bucket, errB := gridfs.NewBucket(
+		conn.Database("gigs"),
+	)
+	if errB != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		return
+	}
+
+	uploadStream, errS := bucket.OpenUploadStream(
+		newFileName, // this is the name of the file which will be saved in the database
+	)
+	if errS != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		return
+	}
+	defer uploadStream.Close()
+
+	fileC, errC := file.Open()
+	if errC != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		return
+	}
+	bytes, errR := ioutil.ReadAll(fileC)
+	if errR != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		return
+	}
+
+	fileSize, err := uploadStream.Write(bytes)
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	fmt.Printf("Write file to DB was successful. File size: %d \n", fileSize)
+	if err != nil {
+		println("add record error")
+		fmt.Println(gigsE, err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
 		return
 	}
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+}
+
+func DownloadFile(c *gin.Context) {
+	id := c.Param("gigId")
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
+	var resultFile = ""
+	for _, a := range gigsfiles {
+		if a.Id == html {
+			resultFile = a.Filename
+			break
+		}
+	}
+
+	if resultFile == "" {
+		c.JSON(http.StatusNotFound, gin.H{"message": "GigFile not found"})
+		return
+	}
+
+	conn := InitiateMongoClient()
+
+	// For CRUD operations, here is an example
+	db := conn.Database("gigs")
+	fsFiles := db.Collection("fs.files")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	var results bson.M
+	err := fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// you can print out the result
+	fmt.Println(results)
+
+	bucket, _ := gridfs.NewBucket(
+		db,
+	)
+	var buf bytes.Buffer
+	dStream, err := bucket.DownloadToStreamByName(resultFile, &buf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("File size to download: %v \n", dStream)
+	ioutil.WriteFile(resultFile, buf.Bytes(), 0600)
 }

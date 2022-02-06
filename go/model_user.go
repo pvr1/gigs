@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -58,7 +57,7 @@ func init() {
 	if err = cursor.All(ctx, &users); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(users)
+	//fmt.Println(users)
 }
 
 var users = []User{

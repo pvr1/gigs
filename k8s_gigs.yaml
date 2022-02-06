@@ -20,6 +20,10 @@ spec:
       labels:
         app:  gigs
     spec:
+#      volumes:
+#      - name: pv-gigsfiles
+#        persistentVolumeClaim:
+#          claimName: pvc-claim-gigsfiles
       # initContainers:
         # Init containers are exactly like regular containers, except:
           # - Init containers always run to completion.
@@ -55,8 +59,8 @@ spec:
         - containerPort:  80
           name:  gigs
 #        volumeMounts:
-#        - name: localtime
-#          mountPath: /etc/localtime
+#        - name: pv-gigsfiles
+#          mountPath: /files
 #      volumes:
 #        - name: localtime
 #          hostPath:
