@@ -383,6 +383,18 @@ func DownloadFile(c *gin.Context) {
 	zipWriter := zip.NewWriter(archive)
 
 	var resultFile = ""
+	client, ctx := connectMongoDB()
+	defer client.Disconnect(ctx)
+
+	gigsCollection := getCollectionMongoDB(client, "gigsfiles")
+	cursor, err := gigsCollection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err = cursor.All(ctx, &gigsfiles); err != nil {
+		log.Fatal(err)
+	}
+
 	for _, a := range gigsfiles {
 		fmt.Println("File: ", a.Filename)
 		if a.Id == html {
