@@ -78,6 +78,7 @@ func AddGig(c *gin.Context) {
 	// newgig.
 	mygig.Id = uuid.NewV4().String()
 	if err := c.BindJSON(&mygig); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "JSON error"})
 		return
 	}
 
@@ -93,6 +94,25 @@ func AddGig(c *gin.Context) {
 		return
 	}
 	mygig.UserId = myUser.Id
+
+	//Sanitize the Tags
+	for _, aTag := range gigs {
+		for i, bTag := range aTag.Tags {
+			mygig.Tags[i].Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(bTag.Name))))
+		}
+	}
+
+	//Sanitize the Category
+	for _, aCategory := range gigs {
+		mygig.Category.Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aCategory.Name))))
+	}
+
+	//Sanitize the Description
+	for _, aDesc := range gigs {
+		for i, bDesc := range aDesc.Description {
+			mygig.Description[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(bDesc))))
+		}
+	}
 
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
@@ -257,6 +277,8 @@ func FindGigsByTagsAndStatus(c *gin.Context) {
 		htmltag = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafetag)))
 		safetags = append(safetags, htmltag)
 	}
+
+	fmt.Println("tags: ", tags, safetags)
 
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
