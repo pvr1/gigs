@@ -89,7 +89,8 @@ func AddGig(c *gin.Context) {
 	}
 
 	//TODO: Validate the user so it is a logged in user
-	if mygig.UserId == "" {
+	//TODO: remove loop hole and force login and not just len(mygig.UserId) >=10
+	if len(mygig.UserId) < 10 && len(myUser.Id) < 10 {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required user id - please login"})
 		return
 	}
