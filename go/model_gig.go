@@ -59,6 +59,17 @@ func init() {
 	if err = cursor.All(ctx, &gigs); err != nil {
 		log.Fatal(err)
 	}
+
+	gigsCollection = quickstartDatabase.Collection("gigsfiles")
+
+	cursor, err = gigsCollection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err = cursor.All(ctx, &gigsfiles); err != nil {
+		log.Fatal(err)
+	}
+
 	//fmt.Println(gigs)
 }
 
