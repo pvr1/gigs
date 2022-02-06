@@ -39,3 +39,7 @@ mongosh admin --host 10.0.0.166 --authenticationDatabase admin -u root -p $MONGO
 use gigs
 db.createUser({user: "gigbe",pwd:  "gigbe", roles: [ { role: "readWrite", db: "gigs" }]})
 ```
+
+```bash
+kubectl get po --no-headers=true | awk '/^[[:blank:]]*gigs-/{print $1}' | xargs  kubectl logs --follow
+```
