@@ -30,7 +30,7 @@ tags:
       url: 'http://swagger.io'
     name: gigworker
 paths:
-  /gigs:
+  /gig:
     post:
       operationId: addGig
       requestBody:

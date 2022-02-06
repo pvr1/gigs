@@ -280,7 +280,7 @@ var routes = Routes{
 	{
 		"UpdateGig",
 		http.MethodPut,
-		"/v2/gigs",
+		"/v2/gig",
 		UpdateGig,
 	},
 

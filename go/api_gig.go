@@ -162,6 +162,48 @@ func DeleteGig(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
+// DeepCopy deepcopies a to b using json marshaling
+func DeepCopy(a, b interface{}) {
+	byt, _ := json.Marshal(a)
+	json.Unmarshal(byt, b)
+}
+
+// UpdateGig - Update an existing gig
+func UpdateGig(c *gin.Context) {
+	/*
+		// If the file doesn't exist, create it or append to the file
+		file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.SetOutput(file)
+	*/
+	bodyjson, err := c.GetRawData()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+	var body Gig
+
+	//unsafe := blackfriday.Run(bodyjson)
+	//html := bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe))
+
+	json.Unmarshal(bodyjson, &body)
+
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
+	for i, a := range gigs {
+		if a.Id == body.Id {
+			// Update the gig
+			DeepCopy(body, &gigs[i])
+			c.JSON(http.StatusOK, body)
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
+}
+
 // FindGigsByStatus - Finds Gigs by status
 func FindGigsByStatus(c *gin.Context) {
 	status, err := c.GetQuery("status")
@@ -280,15 +322,28 @@ func UpdateGigWithForm(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"message": "Gig not found"})
 }
 
+type gigsfilesstruct struct {
+	Id          string `bson:"id"`
+	Filename    string `bson:"filename"`
+	Description string `bson:"description"`
+}
+
 // UploadFile - uploads an image
 func UploadFile(c *gin.Context) {
 	// Single file
 	id := c.Param("gigId")
-	file, err := c.FormFile("file")
+	desc, errQQ := c.GetPostForm("description")
+	//desc, errQQ := c.GetQuery("description")
+	if errQQ {
+		fmt.Println("Error extracting description in POST payload: ", errQQ)
+	}
+	fmt.Println("desc: ", desc)
+
+	file, errQ := c.FormFile("file")
 	//log.Println("file: ", file)
-	if err != nil {
-		log.Println("Error uploading file - ", err)
-		c.String(http.StatusBadRequest, fmt.Sprintf("Error uploading: %s", err.Error()))
+	if errQ != nil {
+		log.Println("Error uploading file - ", errQ)
+		c.String(http.StatusBadRequest, fmt.Sprintf("Error uploading: %s", errQ.Error()))
 		return
 	}
 
@@ -302,17 +357,18 @@ func UploadFile(c *gin.Context) {
 	defer client.Disconnect(ctx)
 
 	gigsCollection := getCollectionMongoDB(client, "gigsfiles")
-	gigsE, err := gigsCollection.InsertMany(ctx, []interface{}{
-		bson.D{
-			{"id", &id},
-			{"filename", &newFileName},
-		},
-	},
-	)
-	if err != nil {
+
+	// Insert a single document
+	gigsE, errQ := gigsCollection.InsertOne(ctx, gigsfilesstruct{
+		Id:          id,
+		Filename:    newFileName,
+		Description: desc,
+	})
+
+	if errQ != nil {
 		println("add record error")
-		fmt.Println(gigsE, err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		fmt.Println(gigsE, errQ)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
 		return
 	}
 
@@ -322,7 +378,7 @@ func UploadFile(c *gin.Context) {
 		conn.Database("gigs"),
 	)
 	if errB != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
 		return
 	}
 
@@ -330,32 +386,32 @@ func UploadFile(c *gin.Context) {
 		newFileName, // this is the name of the file which will be saved in the database
 	)
 	if errS != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
 		return
 	}
 	defer uploadStream.Close()
 
 	fileC, errC := file.Open()
 	if errC != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
 		return
 	}
 	bytes, errR := ioutil.ReadAll(fileC)
 	if errR != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
 		return
 	}
 
-	fileSize, err := uploadStream.Write(bytes)
-	if err != nil {
-		log.Fatal(err)
+	fileSize, errQ := uploadStream.Write(bytes)
+	if errQ != nil {
+		log.Fatal(errQ)
 		os.Exit(1)
 	}
 	fmt.Printf("Write file to DB was successful. File size: %d \n", fileSize)
-	if err != nil {
+	if errQ != nil {
 		println("add record error")
-		fmt.Println(gigsE, err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + err.Error()})
+		fmt.Println(gigsE, errQ)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
 		return
 	}
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
