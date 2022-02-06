@@ -1,10 +1,12 @@
 package openapi
 
 import (
+	"archive/zip"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -363,48 +365,69 @@ func DownloadFile(c *gin.Context) {
 
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
+
+	conn := InitiateMongoClient()
+	db := conn.Database("gigs")
+	fsFiles := db.Collection("fs.files")
+	defer conn.Disconnect(context.TODO())
+
+	archive, err := os.Create("archive.zip")
+	if err != nil {
+		fmt.Println("Error creating archive: ", err)
+	}
+	defer archive.Close()
+	zipWriter := zip.NewWriter(archive)
+
 	var resultFile = ""
 	for _, a := range gigsfiles {
 		fmt.Println("File: ", a.Filename)
 		if a.Id == html {
-			fmt.Println("Found: ", a.Id, " ", a.Filename)
 			resultFile = a.Filename
-			break
+			addFileToZip(zipWriter, resultFile, fsFiles, db)
 		}
 	}
+	zipWriter.Close()
 
 	if resultFile == "" {
 		c.JSON(http.StatusNotFound, gin.H{"message": "GigFile not found"})
 		return
 	}
 
-	conn := InitiateMongoClient()
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Disposition", "attachment; filename=archive.zip")
+	c.Header("Content-Type", "application/octet-stream")
+	c.File("archive.zip")
+}
 
-	// For CRUD operations, here is an example
-	db := conn.Database("gigs")
-	fsFiles := db.Collection("fs.files")
+func addFileToZip(zipWriter *zip.Writer, resultFile string, fsFiles *mongo.Collection, db *mongo.Database) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	var results bson.M
 	err := fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	// you can print out the result
-	fmt.Println(results)
 
-	bucket, _ := gridfs.NewBucket(
+	bucket, errNB := gridfs.NewBucket(
 		db,
 	)
+	if errNB != nil {
+		fmt.Println(errNB)
+	}
+
 	var buf bytes.Buffer
 	dStream, err := bucket.DownloadToStreamByName(resultFile, &buf)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	fmt.Printf("File size to download: %v \n", dStream)
 	ioutil.WriteFile(resultFile, buf.Bytes(), 0600)
-	c.Header("Content-Description", "File Transfer")
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-Disposition", "attachment; filename="+resultFile)
-	c.Header("Content-Type", "application/octet-stream")
-	c.File(resultFile)
+
+	w1, errI := zipWriter.Create(resultFile)
+	if errI != nil {
+		fmt.Println(err)
+	}
+	if _, err := io.Copy(w1, &buf); err != nil {
+		fmt.Println(err)
+	}
 }
