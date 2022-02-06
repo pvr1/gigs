@@ -2,6 +2,7 @@ package openapi
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -30,7 +31,10 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, errCtxTime := context.WithTimeout(context.Background(), 10*time.Second)
+	if errCtxTime != nil {
+		fmt.Println(errCtxTime)
+	}
 	defer client.Disconnect(ctx)
 
 	quickstartDatabase := client.Database("gigs")
