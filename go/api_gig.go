@@ -365,7 +365,9 @@ func DownloadFile(c *gin.Context) {
 	// an gig whose ID value matches the parameter.
 	var resultFile = ""
 	for _, a := range gigsfiles {
+		fmt.Println("File: ", a.Filename)
 		if a.Id == html {
+			fmt.Println("Found: ", a.Id, " ", a.Filename)
 			resultFile = a.Filename
 			break
 		}
@@ -400,4 +402,9 @@ func DownloadFile(c *gin.Context) {
 	}
 	fmt.Printf("File size to download: %v \n", dStream)
 	ioutil.WriteFile(resultFile, buf.Bytes(), 0600)
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Disposition", "attachment; filename="+resultFile)
+	c.Header("Content-Type", "application/octet-stream")
+	c.File(resultFile)
 }
