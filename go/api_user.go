@@ -116,8 +116,11 @@ func GetUserByName(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
 }
 
+var myUser User
+
 // LoginUser - Logs user into the system
 func LoginUser(c *gin.Context) {
+	myUser.Id = "#user#"
 	c.JSON(http.StatusOK, gin.H{})
 }
 

@@ -54,11 +54,14 @@ func AddGig(c *gin.Context) {
 		return
 	}
 
-	//Validadte the gig
+	//Validate the gig
 	if mygig.Name == "" || mygig.Description == nil || mygig.Status == "" || mygig.Measurableoutcome == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Missing required gig fields"})
 		return
 	}
+
+	//TODO: Validate the user so it is a logged in user
+	mygig.userId = myUser.Id
 
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
@@ -148,7 +151,7 @@ func FindGigsByStatus(c *gin.Context) {
 	for _, a := range gigs {
 		if a.Status == html {
 			tmp2 = a
-			tmp2.userId = "#user#"
+			tmp2.userId = myUser.Id
 			tmp = append(tmp, tmp2)
 		}
 	}
@@ -170,7 +173,7 @@ func GetGigById(c *gin.Context) {
 	for _, a := range gigs {
 		if a.Id == html {
 			tmp2 = a
-			tmp2.userId = "#user#"
+			tmp2.userId = myUser.Id
 			c.JSON(http.StatusOK, tmp2)
 			return
 		}
