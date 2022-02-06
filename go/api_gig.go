@@ -95,18 +95,7 @@ func AddGig(c *gin.Context) {
 	}
 	mygig.UserId = myUser.Id
 
-	//Sanitize the Tags
-	for i, aTag := range mygig.Tags {
-		mygig.Tags[i].Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aTag.Name))))
-	}
-
-	//Sanitize the Category
-	mygig.Category.Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(mygig.Category.Name))))
-
-	//Sanitize the Description
-	for i, aDesc := range mygig.Description {
-		mygig.Description[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aDesc))))
-	}
+	mygig = sanitizeGig(&mygig)
 
 	// Add the new gig to the slice.
 	gigs = append(gigs, mygig)
@@ -124,6 +113,36 @@ func AddGig(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, mygig)
+}
+
+// sanitizeGig - a helper function to sanitize a gig
+func sanitizeGig(mygig *Gig) Gig {
+	//Sanitize the Tags
+	for i, aTag := range mygig.Tags {
+		mygig.Tags[i].Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aTag.Name))))
+	}
+
+	//Sanitize the Category
+	mygig.Category.Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(mygig.Category.Name))))
+
+	//Sanitize the Description
+	for i, aDesc := range mygig.Description {
+		//mygig.Description[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(aDesc))))
+		mygig.Description[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(aDesc)))
+	}
+
+	//Sanitize the MeasurableOutcome
+	for i, aOutcome := range mygig.Measurableoutcome {
+		mygig.Measurableoutcome[i] = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(aOutcome)))
+	}
+
+	//Sanitize the Status
+	mygig.Status = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(blackfriday.SanitizedAnchorName(mygig.Status))))
+
+	//Sanitize the Name
+	mygig.Name = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(mygig.Name)))
+
+	return *mygig
 }
 
 // RemoveGig - Helper function to remove a gig from the slice
