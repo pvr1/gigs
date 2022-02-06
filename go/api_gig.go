@@ -232,6 +232,60 @@ func FindGigsByStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, tmp)
 }
 
+func FindGigsByTagsAndStatus(c *gin.Context) {
+	status, err := c.GetQuery("status")
+	tags, err2 := c.GetQueryArray("tags") //TODO: Check if tags is an array
+	if !err || !err2 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	if len(tags) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Malformed request"})
+		return
+	}
+
+	unsafe := blackfriday.SanitizedAnchorName(status)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	// Loop over the list of tags
+	unsafetag := ""
+	htmltag := ""
+	safetags := []string{}
+	for _, tag := range tags {
+		unsafetag = blackfriday.SanitizedAnchorName(tag)
+		htmltag = string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafetag)))
+		safetags = append(safetags, htmltag)
+	}
+
+	// Loop over the list of gigs, looking for
+	// an gig whose ID value matches the parameter.
+
+	tmp := []Gig{}
+	tmp2 := Gig{}
+
+	for _, a := range gigs {
+		if a.Status == html && containsTag(safetags, a.Tags) {
+			tmp2 = a
+			tmp2.UserId = "obfuscated"
+			tmp = append(tmp, tmp2)
+		}
+	}
+
+	c.JSON(http.StatusOK, tmp)
+}
+
+func containsTag(safetags []string, tag []Tag) bool {
+	for _, t := range safetags {
+		for _, t2 := range tag {
+			if t == t2.Name {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // FindGigsByStatus - Finds Gigs by status
 func FindGigsByUser(c *gin.Context) {
 	status, err := c.GetQuery("userid")

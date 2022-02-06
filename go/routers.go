@@ -243,6 +243,13 @@ var routes = Routes{
 	},
 
 	{
+		"FindGigsByTagsAndStatus",
+		http.MethodGet,
+		"/v2/gig/findByTagsAndStatus",
+		FindGigsByTagsAndStatus,
+	},
+
+	{
 		"FindGigsByUser",
 		http.MethodGet,
 		"/v2/gig/findByUser",
