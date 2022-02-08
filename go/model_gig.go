@@ -37,6 +37,10 @@ type Gigfile struct {
 }
 
 func init() {
+	resyncGigs()
+}
+
+func resyncGigs() {
 	credential := options.Credential{
 		Username: "gigbe",
 		Password: "gigbe",
@@ -73,8 +77,6 @@ func init() {
 	if err = cursor.All(ctx, &gigsfiles); err != nil {
 		log.Fatal(err)
 	}
-
-	//fmt.Println(gigs)
 }
 
 var gigs = []Gig{}

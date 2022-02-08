@@ -320,6 +320,20 @@ var routes = Routes{
 	},
 
 	{
+		"AcceptTransaction",
+		http.MethodPut,
+		"/v2/store/accept/:transactionId",
+		AcceptTransaction,
+	},
+
+	{
+		"RejectTransaction",
+		http.MethodPut,
+		"/v2/store/reject/:transactionId",
+		RejectTransaction,
+	},
+
+	{
 		"CreateUser",
 		http.MethodPost,
 		"/v2/user",

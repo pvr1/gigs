@@ -30,6 +30,10 @@ type transaction struct {
 }
 
 func init() {
+	resyncTransactions()
+}
+
+func resyncTransactions() {
 	credential := options.Credential{
 		Username: "gigbe",
 		Password: "gigbe",
@@ -56,7 +60,6 @@ func init() {
 	if err = cursor.All(ctx, &transactions); err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Println(transactions)
 }
 
 var ddate, _ = time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")

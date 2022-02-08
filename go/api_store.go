@@ -76,28 +76,33 @@ func DeleteTransaction(c *gin.Context) {
 
 // GetTransactions - Returns gig inventories by status
 func GetTransactions(c *gin.Context) {
-	status, err := c.GetQuery("RegisteredClaims")
-	if err {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid claims"})
-		return
-	}
-
-	unsafe := blackfriday.SanitizedAnchorName(status)
-	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
-
-	tmp := []transaction{}
-
-	for _, a := range transactions {
-		if a.Status == html {
-			tmp = append(tmp, a)
+	resyncTransactions()
+	/*
+		status, err := c.GetQuery("RegisteredClaims")
+		if err {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid claims"})
+			return
 		}
-	}
 
-	c.JSON(http.StatusOK, tmp)
+		unsafe := blackfriday.SanitizedAnchorName(status)
+		html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+		tmp := []transaction{}
+
+		for _, a := range transactions {
+			if a.Status == html {
+				tmp = append(tmp, a)
+			}
+		}
+
+		c.JSON(http.StatusOK, tmp)
+	*/
+	c.JSON(http.StatusOK, transactions)
 }
 
 // GetTransactionById - Find purchase transaction by ID
 func GetTransactionById(c *gin.Context) {
+	resyncTransactions()
 	id := c.Param("transactionId")
 	// Loop over the list of transactions, looking for
 	// an transaction whose ID value matches the parameter.
@@ -150,4 +155,66 @@ func PlaceTransaction(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, mypurchase)
+}
+
+// AcceptTransaction - Accept a transaction (as a employer) that has been placed by a worker
+func AcceptTransaction(c *gin.Context) {
+	id := c.Param("transactionId")
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	for _, a := range transactions {
+		if a.Id == html {
+			a.Status = "Accepted"
+			//TODO: Send info about the transaction to the worker
+			client, ctx := connectMongoDB()
+			defer client.Disconnect(ctx)
+			transCollection := getCollectionMongoDB(client, "transactions")
+			transE, err := transCollection.UpdateOne(ctx,
+				bson.M{"id": html},
+				bson.M{"$set": bson.M{"status": "Accepted"}},
+			)
+			if err != nil {
+				println("add record error")
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid transaction"})
+				return
+			}
+
+			c.JSON(http.StatusOK, transE)
+			return
+		}
+	}
+
+}
+
+// AcceptTransaction - Accept a transaction (as a employer) that has been placed by a worker
+func RejectTransaction(c *gin.Context) {
+	id := c.Param("transactionId")
+
+	unsafe := blackfriday.SanitizedAnchorName(id)
+	html := string(bluemonday.UGCPolicy().SanitizeBytes([]byte(unsafe)))
+
+	for _, a := range transactions {
+		if a.Id == html {
+			a.Status = "Rejected"
+			//TODO: Send info about the transaction to the worker
+			client, ctx := connectMongoDB()
+			defer client.Disconnect(ctx)
+			transCollection := getCollectionMongoDB(client, "transactions")
+			transE, err := transCollection.UpdateOne(ctx,
+				bson.M{"id": html},
+				bson.M{"$set": bson.M{"status": "Rejected"}},
+			)
+			if err != nil {
+				println("add record error")
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid transaction"})
+				return
+			}
+
+			c.JSON(http.StatusOK, transE)
+			return
+		}
+	}
+
 }

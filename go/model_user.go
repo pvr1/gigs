@@ -35,6 +35,10 @@ type User struct {
 }
 
 func init() {
+	resyncUsers()
+}
+
+func resyncUsers() {
 	credential := options.Credential{
 		Username: "gigbe",
 		Password: "gigbe",
@@ -61,7 +65,7 @@ func init() {
 	if err = cursor.All(ctx, &users); err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Println(users)
+
 }
 
 var users = []User{

@@ -19,6 +19,10 @@ type Role struct {
 }
 
 func init() {
+	resyncRoles()
+}
+
+func resyncRoles() {
 	credential := options.Credential{
 		Username: "gigbe",
 		Password: "gigbe",
@@ -45,7 +49,7 @@ func init() {
 	if err = cursor.All(ctx, &roles); err != nil {
 		log.Fatal(err)
 	}
-	//fmt.Println(roles)
+
 }
 
 var roles = []Role{}
