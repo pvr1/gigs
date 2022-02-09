@@ -292,7 +292,7 @@ func FindGigsByTagsAndStatus(c *gin.Context) {
 		safetags = append(safetags, htmltag)
 	}
 
-	fmt.Println("tags: ", tags, safetags)
+	//fmt.Println("tags: ", safetags)
 
 	// Loop over the list of gigs, looking for
 	// an gig whose ID value matches the parameter.
@@ -337,7 +337,7 @@ func FindGigsByUser(c *gin.Context) {
 	// an gig whose ID value matches the parameter.
 
 	tmp := []Gig{}
-	fmt.Println("userid: ", html)
+	//fmt.Println("userid: ", html)
 
 	for _, a := range gigs {
 		if a.UserId == html {
@@ -427,7 +427,7 @@ func UploadFile(c *gin.Context) {
 	if errQQ {
 		fmt.Println("Error extracting description in POST payload: ", errQQ)
 	}
-	fmt.Println("desc: ", desc)
+	//fmt.Println("desc: ", desc)
 
 	file, errQ := c.FormFile("file")
 	//log.Println("file: ", file)
@@ -494,8 +494,9 @@ func UploadFile(c *gin.Context) {
 
 	fileSize, errQ := uploadStream.Write(bytes)
 	if errQ != nil {
-		log.Fatal(errQ)
-		os.Exit(1)
+		fmt.Println(errQ)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Err: " + errQ.Error()})
+		return
 	}
 	fmt.Printf("Write file to DB was successful. File size: %d \n", fileSize)
 	if errQ != nil {
