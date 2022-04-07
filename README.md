@@ -25,7 +25,7 @@ docker build .
 Create mongodb in kubernetes (in namespace mongodb). Create gigs in default as of now...
 
 ```bash
-kubectl ns mongodb
+kubectl create ns mongodb
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install my-release -n mongodb bitnami/mongodb
 
