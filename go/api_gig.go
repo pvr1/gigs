@@ -30,7 +30,7 @@ func connectMongoDB() (*mongo.Client, context.Context) {
 		Username: "gigbe",
 		Password: "gigbe",
 	}
-	clientOpts := options.Client().ApplyURI("mongodb://mymongodb.mongodb.svc.cluster.local:27017").
+	clientOpts := options.Client().ApplyURI("mongodb://mongodb.mongodb.svc.cluster.local:27017").
 		SetAuth(credential)
 	client, err := mongo.Connect(context.TODO(), clientOpts)
 	if err != nil {
@@ -52,7 +52,7 @@ func InitiateMongoClient() *mongo.Client {
 		Username: "gigbe",
 		Password: "gigbe",
 	}
-	uri := "mongodb://mymongodb.mongodb.svc.cluster.local:27017"
+	uri := "mongodb://mongodb.mongodb.svc.cluster.local:27017"
 	opts := options.Client()
 	opts.ApplyURI(uri).SetAuth(credential)
 	//TODO: adjust maxpoolsize

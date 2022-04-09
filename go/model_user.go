@@ -43,7 +43,7 @@ func resyncUsers() {
 		Username: "gigbe",
 		Password: "gigbe",
 	}
-	clientOpts := options.Client().ApplyURI("mongodb://mymongodb.mongodb.svc.cluster.local:27017").
+	clientOpts := options.Client().ApplyURI("mongodb://mongodb.mongodb.svc.cluster.local:27017").
 		SetAuth(credential)
 	client, err := mongo.Connect(context.TODO(), clientOpts)
 	if err != nil {
