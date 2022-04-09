@@ -27,7 +27,7 @@ Create mongodb in kubernetes (in namespace mongodb). Create gigs in default as o
 ```bash
 kubectl create ns mongodb
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install my-release -n mongodb bitnami/mongodb
+helm install mongodb -n mongodb bitnami/mongodb
 
 kubectl apply -f k8s_gigs.yaml
 ```
