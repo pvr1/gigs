@@ -51,7 +51,7 @@ require (
 	github.com/russross/blackfriday v1.6.0
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	go.mongodb.org/mongo-driver v1.8.3
-	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect
+	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
